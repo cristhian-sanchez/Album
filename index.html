@@ -436,7 +436,7 @@ function doRegister() {
 
 function doLogin() {
   const user = document.getElementById('lUser').value.trim().toLowerCase();
-  const pass = document.getElementById('lPass').value;
+  const pass = document.getElementById('lPass').value; // <-- Cambiado '1Pass' por 'lPass'
   if (!user || !pass) return showMsg('Por favor completa todos los campos.');
 
   // CORRECCIÓN: Usar un dominio de correo estándar (.com) aceptado por Firebase
@@ -447,7 +447,6 @@ function doLogin() {
       showMsg('Usuario o contraseña incorrectos.');
     });
 }
-
 function doLogout() {
   signOut(auth).then(() => {
     document.getElementById('appScreen').style.display = 'none';
