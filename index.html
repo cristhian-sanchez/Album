@@ -311,8 +311,42 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 
 <div class="save-toast" id="toast">✓ Guardado</div>
 
-<script>
-/* ═══════════ DATOS ═══════════ */
+<script type="module">
+// ── 1. IMPORTAR SDK DE FIREBASE DESDE EL CDN OFICIAL ──
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { 
+  getDatabase, 
+  ref, 
+  set, 
+  get, 
+  onValue 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+// ── 2. CONFIGURACIÓN DE TU PROYECTO (PANINI-2026) ──
+const firebaseConfig = {
+  apiKey: "AIzaSyDZMaDjeRO4V2yGZIsFNE8c4E4vSHdqVos",
+  authDomain: "panini-2026-4b480.firebaseapp.com",
+  databaseURL: "https://panini-2026-4b480-default-rtdb.firebaseio.com",
+  projectId: "panini-2026-4b480",
+  storageBucket: "panini-2026-4b480.firebasestorage.app",
+  messagingSenderId: "921401065996",
+  appId: "1:921401065996:web:eaa55814f1b193e96ee429",
+  measurementId: "G-MR4J82TYL6"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+/* ═══════════ DATOS ESTRUCTURALES DEL ÁLBUM ═══════════ */
 const GRUPOS=[
   {id:'A',label:'Grupo A',teams:[{name:'Chequia',code:'CZE',flag:'🇨🇿'},{name:'México',code:'MEX',flag:'🇲🇽'},{name:'Sudáfrica',code:'RSA',flag:'🇿🇦'},{name:'Corea del Sur',code:'KOR',flag:'🇰🇷'}]},
   {id:'B',label:'Grupo B',teams:[{name:'Bosnia y Herzegovina',code:'BIH',flag:'🇧🇦'},{name:'Canadá',code:'CAN',flag:'🇨🇦'},{name:'Catar',code:'QAT',flag:'🇶🇦'},{name:'Suiza',code:'SUI',flag:'🇨🇭'}]},
@@ -328,236 +362,290 @@ const GRUPOS=[
   {id:'L',label:'Grupo L',teams:[{name:'Croacia',code:'CRO',flag:'🇭🇷'},{name:'Inglaterra',code:'ENG',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},{name:'Ghana',code:'GHA',flag:'🇬🇭'},{name:'Panamá',code:'PAN',flag:'🇵🇦'}]},
 ];
 const CC=[
-  {n:1,name:'Lamine Yamal',team:'España',flag:'🇪🇸'},
-  {n:2,name:'Joshua Kimmich',team:'Alemania',flag:'🇩🇪'},
-  {n:3,name:'Harry Kane',team:'Inglaterra',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
-  {n:4,name:'Santiago Giménez',team:'México',flag:'🇲🇽'},
-  {n:5,name:'Josko Gvardiol',team:'Croacia',flag:'🇭🇷'},
-  {n:6,name:'Federico Valverde',team:'Uruguay',flag:'🇺🇾'},
-  {n:7,name:'Jefferson Lerma',team:'Colombia',flag:'🇨🇴'},
-  {n:8,name:'Enner Valencia',team:'Ecuador',flag:'🇪🇨'},
-  {n:9,name:'Gabriel Magalhães',team:'Brasil',flag:'🇧🇷'},
-  {n:10,name:'Virgil van Dijk',team:'Países Bajos',flag:'🇳🇱'},
-  {n:11,name:'Alphonso Davies',team:'Canadá',flag:'🇨🇦'},
-  {n:12,name:'Emiliano Martínez',team:'Argentina',flag:'🇦🇷'},
-  {n:13,name:'Raúl Jiménez',team:'México',flag:'🇲🇽'},
-  {n:14,name:'Lautaro Martínez',team:'Argentina',flag:'🇦🇷'},
+  {n:1,name:'Lamine Yamal',team:'España',flag:'🇪🇸'}, {n:2,name:'Joshua Kimmich',team:'Alemania',flag:'🇩🇪'},
+  {n:3,name:'Harry Kane',team:'Inglaterra',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'}, {n:4,name:'Santiago Giménez',team:'México',flag:'🇲🇽'},
+  {n:5,name:'Josko Gvardiol',team:'Croacia',flag:'🇭🇷'}, {n:6,name:'Federico Valverde',team:'Uruguay',flag:'🇺🇾'},
+  {n:7,name:'Jefferson Lerma',team:'Colombia',flag:'🇨🇴'}, {n:8,name:'Enner Valencia',team:'Ecuador',flag:'🇪🇨'},
+  {n:9,name:'Gabriel Magalhães',team:'Brasil',flag:'🇧🇷'}, {n:10,name:'Virgil van Dijk',team:'Países Bajos',flag:'🇳🇱'},
+  {n:11,name:'Alphonso Davies',team:'Canadá',flag:'🇨🇦'}, {n:12,name:'Emiliano Martínez',team:'Argentina',flag:'🇦🇷'},
+  {n:13,name:'Raúl Jiménez',team:'México',flag:'🇲🇽'}, {n:14,name:'Lautaro Martínez',team:'Argentina',flag:'🇦🇷'},
 ];
 const FPT=20, TOTAL=994;
 
-/* ═══════════ STORAGE HELPERS ═══════════ */
-// Guarda usuarios y álbumes en localStorage con clave única por usuario
-function lsGet(key){try{return JSON.parse(localStorage.getItem(key))}catch(e){return null}}
-function lsSet(key,val){try{localStorage.setItem(key,JSON.stringify(val))}catch(e){}}
-function getUsers(){return lsGet('p26_users')||{}}
-function saveUsers(u){lsSet('p26_users',u)}
-function getUserAlbum(user){return lsGet('p26_album_'+user)||{sobres:0,stickers:{}}}
-function saveUserAlbum(user,data){lsSet('p26_album_'+user,data)}
+/* ═══════════ VARIABLES DE ESTADO ═══════════ */
+let currentUser = null;
+let album = { sobres: 0, stickers: {} };
+let saveTimer = null;
+let activeFilter = 'all';
 
-/* ═══════════ SIMPLE HASH ═══════════ */
-function simpleHash(str){
-  // djb2 — no es crypto real pero suficiente para este uso local
-  let h=5381;
-  for(let i=0;i<str.length;i++) h=((h<<5)+h)+str.charCodeAt(i);
-  return (h>>>0).toString(36);
+/* ═══════════ INTERFAZ VISUAL DE AUTENTICACIÓN ═══════════ */
+function showMsg(msg, type) {
+  const el = document.getElementById('authMsg');
+  el.className = 'auth-msg ' + (type || 'error');
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
 }
 
-/* ═══════════ AUTH ═══════════ */
-let currentUser=null;
-let album={sobres:0,stickers:{}};
-
-function showMsg(msg,type){
-  const el=document.getElementById('authMsg');
-  el.className='auth-msg '+(type||'error');
-  el.textContent=msg;
-  el.style.display=msg?'block':'none';
-}
-function switchTab(tab){
-  const isLogin=tab==='login';
-  document.getElementById('tabLoginBtn').classList.toggle('active',isLogin);
-  document.getElementById('tabRegBtn').classList.toggle('active',!isLogin);
-  document.getElementById('loginForm').style.display=isLogin?'':'none';
-  document.getElementById('registerForm').style.display=isLogin?'none':'';
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('tabLoginBtn').classList.toggle('active', isLogin);
+  document.getElementById('tabRegBtn').classList.toggle('active', !isLogin);
+  document.getElementById('loginForm').style.display = isLogin ? '' : 'none';
+  document.getElementById('registerForm').style.display = isLogin ? 'none' : '';
   showMsg('');
 }
 
-function doRegister(){
-  const user=document.getElementById('rUser').value.trim().toLowerCase();
-  const pass=document.getElementById('rPass').value;
-  const pass2=document.getElementById('rPass2').value;
-  if(!user||!/^[a-z0-9_\-]{2,20}$/.test(user)){return showMsg('Usuario inválido. Usa 2-20 caracteres: letras, números, _ o -');}
-  if(pass.length<4){return showMsg('La contraseña debe tener al menos 4 caracteres.');}
-  if(pass!==pass2){return showMsg('Las contraseñas no coinciden.');}
-  const users=getUsers();
-  if(users[user]){return showMsg('Ese usuario ya existe. Elige otro nombre.');}
-  users[user]=simpleHash(pass+'_p26_'+user);
-  saveUsers(users);
-  saveUserAlbum(user,{sobres:0,stickers:{}});
-  showMsg('✓ Cuenta creada. Ahora inicia sesión.','success');
-  document.getElementById('rUser').value='';
-  document.getElementById('rPass').value='';
-  document.getElementById('rPass2').value='';
-  setTimeout(()=>switchTab('login'),1400);
+// Vinculación de funciones al entorno global (window) necesarias por los 'onclick' inline del HTML
+window.switchTab = switchTab;
+window.setFilter = setFilter;
+window.applyFilter = applyFilter;
+window.showTab = showTab;
+window.changeSobres = changeSobres;
+
+/* ═══════════ CONTROL DE USUARIOS (FIREBASE AUTH) ═══════════ */
+function doRegister() {
+  const user = document.getElementById('rUser').value.trim().toLowerCase();
+  const pass = document.getElementById('rPass').value;
+  const pass2 = document.getElementById('rPass2').value;
+
+  if (!user || user.length < 3) return showMsg('El usuario debe tener al menos 3 caracteres.');
+  if (pass.length < 6) return showMsg('La contraseña debe tener al menos 6 caracteres.');
+  if (pass !== pass2) return showMsg('Las contraseñas no coinciden.');
+
+  // Mantenemos tu UI intacta simulando un e-mail estructurado con su nombre de usuario
+  const fakeEmail = `${user}@panini2026.local`;
+
+  createUserWithEmailAndPassword(auth, fakeEmail, pass)
+    .then((userCredential) => {
+      // Guardamos la relación UID -> Nombre de usuario para mostrarlo en el header
+      return set(ref(db, 'users_metadata/' + userCredential.user.uid), { username: user });
+    })
+    .then(() => {
+      showMsg('✓ ¡Cuenta creada con éxito!', 'success');
+      document.getElementById('rUser').value = '';
+      document.getElementById('rPass').value = '';
+      document.getElementById('rPass2').value = '';
+    })
+    .catch((error) => {
+      if (error.code === 'auth/email-already-in-use') {
+        showMsg('Ese nombre de usuario ya está registrado.');
+      } else {
+        showMsg('Error en registro: ' + error.message);
+      }
+    });
 }
 
-function doLogin(){
-  const user=document.getElementById('lUser').value.trim().toLowerCase();
-  const pass=document.getElementById('lPass').value;
-  if(!user||!pass){return showMsg('Completa usuario y contraseña.');}
-  const users=getUsers();
-  if(!users[user]){return showMsg('Usuario no encontrado.');}
-  if(users[user]!==simpleHash(pass+'_p26_'+user)){return showMsg('Contraseña incorrecta.');}
-  currentUser=user;
-  album=getUserAlbum(user);
-  showMsg('');
-  enterApp();
+function doLogin() {
+  const user = document.getElementById('lUser').value.trim().toLowerCase();
+  const pass = document.getElementById('lPass').value;
+  if (!user || !pass) return showMsg('Por favor completa todos los campos.');
+
+  const fakeEmail = `${user}@panini2026.local`;
+
+  signInWithEmailAndPassword(auth, fakeEmail, pass)
+    .catch((error) => {
+      showMsg('Usuario o contraseña incorrectos.');
+    });
 }
 
-function doLogout(){
-  currentUser=null;
-  album={sobres:0,stickers:{}};
-  document.getElementById('appScreen').style.display='none';
-  document.getElementById('authScreen').style.display='flex';
-  document.getElementById('groupsContainer').innerHTML='';
-  document.getElementById('lUser').value='';
-  document.getElementById('lPass').value='';
-  showMsg('');
+function doLogout() {
+  signOut(auth).then(() => {
+    document.getElementById('appScreen').style.display = 'none';
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('groupsContainer').innerHTML = '';
+    document.getElementById('lUser').value = '';
+    document.getElementById('lPass').value = '';
+    showMsg('');
+  });
 }
 
-// Enter key
-document.addEventListener('keydown',e=>{
-  if(e.key!=='Enter') return;
-  if(document.getElementById('loginForm').style.display!=='none') doLogin();
+window.doRegister = doRegister;
+window.doLogin = doLogin;
+window.doLogout = doLogout;
+
+// Escucha reactiva: Se dispara automáticamente al loguearse, desloguearse o recargar la página
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    get(ref(db, 'users_metadata/' + user.uid)).then((snapshot) => {
+      let username = user.email.split('@')[0];
+      if (snapshot.exists()) {
+        username = snapshot.val().username;
+      }
+      currentUser = username;
+      document.getElementById('hUser').textContent = currentUser;
+
+      // Escuchar y sincronizar el álbum desde Realtime Database en tiempo real
+      const albumRef = ref(db, 'albums/' + user.uid);
+      onValue(albumRef, (albumSnapshot) => {
+        const data = albumSnapshot.val();
+        album = data ? data : { sobres: 0, stickers: {} };
+        if (!album.stickers) album.stickers = {};
+        
+        enterApp();
+      });
+    });
+  } else {
+    currentUser = null;
+    album = { sobres: 0, stickers: {} };
+  }
+});
+
+// Capturar el botón Enter en los formularios
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('loginForm').style.display !== 'none') doLogin();
   else doRegister();
 });
 
-/* ═══════════ APP ═══════════ */
-function enterApp(){
-  document.getElementById('authScreen').style.display='none';
-  document.getElementById('appScreen').style.display='block';
-  document.getElementById('hUser').textContent=currentUser;
+/* ═══════════ GUARDADO EN TIEMPO REAL (DEBOUNCE) ═══════════ */
+function enterApp() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'block';
+  
+  const scrollPos = window.scrollY; // Previene que el scroll salte bruscamente al hacer clic
   buildAlbum();
   updateStats();
   updateSobresUI();
+  window.scrollTo(0, scrollPos);
 }
 
-let saveTimer=null;
-function saveAlbum(){
+function saveAlbum() {
+  if (!auth.currentUser) return;
   clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{
-    saveUserAlbum(currentUser,album);
-    const t=document.getElementById('toast');
-    t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),1400);
-  },500);
+  
+  // Espera 500ms tras el último clic para evitar saturar la base de datos con peticiones masivas
+  saveTimer = setTimeout(() => {
+    set(ref(db, 'albums/' + auth.currentUser.uid), album)
+      .then(() => {
+        const t = document.getElementById('toast');
+        if (t) {
+          t.classList.add('show');
+          setTimeout(() => t.classList.remove('show'), 1400);
+        }
+      });
+  }, 500);
 }
 
-function fid(code,n){return code+'_'+n;}
-function st(id){return album.stickers[id]||0;}
+/* ═══════════ LÓGICA DEL ÁLBUM ═══════════ */
+function fid(code, n) { return code + '_' + n; }
+function st(id) { return album.stickers[id] || 0; }
 
-function cycleSticker(id,el){
-  const n=st(id)>=2?0:st(id)+1;
-  if(n===0) delete album.stickers[id]; else album.stickers[id]=n;
-  el.className='fig '+['','have','repeated'][n];
-  updateStats(); saveAlbum();
+window.cycleSticker = function(id, el) {
+  const n = st(id) >= 2 ? 0 : st(id) + 1;
+  if (n === 0) delete album.stickers[id]; else album.stickers[id] = n;
+  el.className = 'fig ' + ['', 'have', 'repeated'][n];
+  updateStats(); 
+  saveAlbum();
   updateTeamCard(el.closest('.team-card'));
-}
-function cycleSpecial(id,el){
-  const n=st(id)>=2?0:st(id)+1;
-  if(n===0) delete album.stickers[id]; else album.stickers[id]=n;
-  el.className='spec-fig '+['','have','repeated'][n];
-  updateStats(); saveAlbum();
-}
-function cycleCoca(id,el){
-  const n=st(id)>=2?0:st(id)+1;
-  if(n===0) delete album.stickers[id]; else album.stickers[id]=n;
-  el.className='coca-card '+['','have','repeated'][n];
-  updateStats(); saveAlbum();
-  let h=0; CC.forEach(p=>{if(st('CC_'+p.n)>=1)h++;});
-  const b=document.getElementById('cocaBar'),c=document.getElementById('cocaCount');
-  if(b) b.style.width=Math.round(h/14*100)+'%';
-  if(c) c.textContent=h+'/14';
-}
+};
 
-function updateTeamCard(card){
-  if(!card) return;
-  const code=card.dataset.code;
-  let have=0,reps=0;
-  for(let i=1;i<=FPT;i++){const v=st(fid(code,i));if(v>=1)have++;if(v===2)reps++;}
-  const pct=Math.round(have/FPT*100);
-  const fill=card.querySelector('.team-bar-fill');
-  const i1=card.querySelector('.team-bar-info span:first-child');
-  const i2=card.querySelector('.team-bar-info span:last-child');
-  const badge=card.querySelector('.team-pct-badge');
-  if(fill) fill.style.width=pct+'%';
-  if(i1) i1.textContent=have+'/'+FPT;
-  if(i2) i2.textContent=reps+' rep.';
-  if(badge){badge.textContent=pct+'%';badge.className='team-pct-badge'+(pct===100?' done':pct>=50?' good':'');}
+window.cycleSpecial = function(id, el) {
+  const n = st(id) >= 2 ? 0 : st(id) + 1;
+  if (n === 0) delete album.stickers[id]; else album.stickers[id] = n;
+  el.className = 'spec-fig ' + ['', 'have', 'repeated'][n];
+  updateStats(); 
+  saveAlbum();
+};
+
+window.cycleCoca = function(id, el) {
+  const n = st(id) >= 2 ? 0 : st(id) + 1;
+  if (n === 0) delete album.stickers[id]; else album.stickers[id] = n;
+  el.className = 'coca-card ' + ['', 'have', 'repeated'][n];
+  updateStats(); 
+  saveAlbum();
+  let h = 0; CC.forEach(p => { if (st('CC_' + p.n) >= 1) h++; });
+  const b = document.getElementById('cocaBar'), c = document.getElementById('cocaCount');
+  if (b) b.style.width = Math.round(h / 14 * 100) + '%';
+  if (c) c.textContent = h + '/14';
+};
+
+function updateTeamCard(card) {
+  if (!card) return;
+  const code = card.dataset.code;
+  let have = 0, reps = 0;
+  for (let i = 1; i <= FPT; i++) { const v = st(fid(code, i)); if (v >= 1) have++; if (v === 2) reps++; }
+  const pct = Math.round(have / FPT * 100);
+  const fill = card.querySelector('.team-bar-fill');
+  const i1 = card.querySelector('.team-bar-info span:first-child');
+  const i2 = card.querySelector('.team-bar-info span:last-child');
+  const badge = card.querySelector('.team-pct-badge');
+  if (fill) fill.style.width = pct + '%';
+  if (i1) i1.textContent = have + '/' + FPT;
+  if (i2) i2.textContent = reps + ' rep.';
+  if (badge) { badge.className = 'team-pct-badge' + (pct === 100 ? ' done' : pct >= 50 ? ' good' : ''); badge.textContent = pct + '%'; }
   updateGroupHeader(card.closest('.group-section'));
 }
-function updateGroupHeader(sec){
-  if(!sec) return;
-  const g=GRUPOS.find(x=>x.id===sec.dataset.group);
-  if(!g) return;
-  let h=0,t=g.teams.length*FPT;
-  g.teams.forEach(tm=>{for(let i=1;i<=FPT;i++){if(st(fid(tm.code,i))>=1)h++;}});
-  const pill=sec.querySelector('.group-progress-pill');
-  if(pill) pill.innerHTML='<b>'+h+'/'+t+'</b> · '+Math.round(h/t*100)+'%';
+
+function updateGroupHeader(sec) {
+  if (!sec) return;
+  const g = GRUPOS.find(x => x.id === sec.dataset.group);
+  if (!g) return;
+  let h = 0, t = g.teams.length * FPT;
+  g.teams.forEach(tm => { for (let i = 1; i <= FPT; i++) { if (st(fid(tm.code, i)) >= 1) h++; } });
+  const pill = sec.querySelector('.group-progress-pill');
+  if (pill) pill.innerHTML = '<b>' + h + '/' + t + '</b> · ' + Math.round(h / t * 100) + '%';
 }
 
-function calcAll(){
-  let have=0,rep=0;
-  Object.values(album.stickers).forEach(v=>{if(v===1)have++;else if(v===2){have++;rep++;}});
-  return{have,rep,miss:TOTAL-have};
+function calcAll() {
+  let have = 0, rep = 0;
+  Object.values(album.stickers).forEach(v => { if (v === 1) have++; else if (v === 2) { have++; rep++; } });
+  return { have, rep, miss: TOTAL - have };
 }
-function updateStats(){
-  const{have,rep,miss}=calcAll();
-  const pct=Math.round(have/TOTAL*100);
-  ['bigPct','hPct'].forEach(id=>document.getElementById(id).textContent=pct+'%');
-  document.getElementById('mainBar').style.width=pct+'%';
-  document.getElementById('mainBarText').textContent=have+' de '+TOTAL;
-  document.getElementById('sHave').textContent=have;
-  document.getElementById('sMiss').textContent=miss;
-  document.getElementById('sRep').textContent=rep;
-  let done=0;
-  GRUPOS.forEach(g=>{
-    let h=0; g.teams.forEach(t=>{for(let i=1;i<=FPT;i++){if(st(fid(t.code,i))>=1)h++;}});
-    if(h===g.teams.length*FPT)done++;
+
+function updateStats() {
+  const { have, rep, miss } = calcAll();
+  const pct = Math.round(have / TOTAL * 100);
+  ['bigPct', 'hPct'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = pct + '%';
   });
-  document.getElementById('sGroups').textContent=done+'/12';
+  if(document.getElementById('mainBar')) document.getElementById('mainBar').style.width = pct + '%';
+  if(document.getElementById('mainBarText')) document.getElementById('mainBarText').textContent = have + ' de ' + TOTAL;
+  if(document.getElementById('sHave')) document.getElementById('sHave').textContent = have;
+  if(document.getElementById('sMiss')) document.getElementById('sMiss').textContent = miss;
+  if(document.getElementById('sRep')) document.getElementById('sRep').textContent = rep;
+  let done = 0;
+  GRUPOS.forEach(g => {
+    let h = 0; g.teams.forEach(t => { for (let i = 1; i <= FPT; i++) { if (st(fid(t.code, i)) >= 1) h++; } });
+    if (h === g.teams.length * FPT) done++;
+  });
+  if(document.getElementById('sGroups')) document.getElementById('sGroups').textContent = done + '/12';
 }
 
-function changeSobres(d){
-  album.sobres=Math.max(0,(album.sobres||0)+d);
-  updateSobresUI(); saveAlbum();
-}
-function updateSobresUI(){
-  const s=album.sobres||0;
-  document.getElementById('sobresDisp').textContent=s;
-  document.getElementById('sSobres').textContent=s;
-  document.getElementById('sSobresInfo').textContent='≈'+(s*7)+' figuritas';
+function changeSobres(d) {
+  album.sobres = Math.max(0, (album.sobres || 0) + d);
+  updateSobresUI(); 
+  saveAlbum();
 }
 
-/* ═══════════ BUILD DOM ═══════════ */
-function buildAlbum(){
-  const cnt=document.getElementById('groupsContainer');
-  cnt.innerHTML='';
-  GRUPOS.forEach(g=>{
-    const sec=document.createElement('div');
-    sec.className='group-section'; sec.dataset.group=g.id;
-    const tot=g.teams.length*FPT;
-    sec.innerHTML=`<div class="group-header"><div class="group-badge">GRUPO ${g.id}</div><div class="group-name">${g.label}</div><div class="group-progress-pill"><b>0/${tot}</b> · 0%</div></div><div class="teams-grid" id="tg-${g.id}"></div>`;
+function updateSobresUI() {
+  const s = album.sobres || 0;
+  if(document.getElementById('sobresDisp')) document.getElementById('sobresDisp').textContent = s;
+  if(document.getElementById('sSobres')) document.getElementById('sSobres').textContent = s;
+  if(document.getElementById('sSobresInfo')) document.getElementById('sSobresInfo').textContent = '≈' + (s * 7) + ' figuritas';
+}
+
+/* ═══════════ CONSTRUCCIÓN DINÁMICA DEL ÁLBUM ═══════════ */
+function buildAlbum() {
+  const cnt = document.getElementById('groupsContainer');
+  if(!cnt) return;
+  cnt.innerHTML = '';
+  GRUPOS.forEach(g => {
+    const sec = document.createElement('div');
+    sec.className = 'group-section'; sec.dataset.group = g.id;
+    const tot = g.teams.length * FPT;
+    sec.innerHTML = `<div class="group-header"><div class="group-badge">GRUPO ${g.id}</div><div class="group-name">${g.label}</div><div class="group-progress-pill"><b>0/${tot}</b> · 0%</div></div><div class="teams-grid" id="tg-${g.id}"></div>`;
     cnt.appendChild(sec);
-    const tg=sec.querySelector('.teams-grid');
-    g.teams.forEach(tm=>{
-      const card=document.createElement('div');
-      card.className='team-card'; card.dataset.code=tm.code; card.dataset.name=tm.name.toLowerCase(); card.dataset.group=g.id;
-      let figs='';
-      for(let i=1;i<=FPT;i++){
-        const id=fid(tm.code,i),v=st(id),cls=['','have','repeated'][v];
-        figs+=`<div class="fig ${cls}" title="${tm.code}-${i}" onclick="cycleSticker('${id}',this)">${i}</div>`;
+    const tg = sec.querySelector('.teams-grid');
+    g.teams.forEach(tm => {
+      const card = document.createElement('div');
+      card.className = 'team-card'; card.dataset.code = tm.code; card.dataset.name = tm.name.toLowerCase(); card.dataset.group = g.id;
+      let figs = '';
+      for (let i = 1; i <= FPT; i++) {
+        const id = fid(tm.code, i), v = st(id), cls = ['', 'have', 'repeated'][v];
+        figs += `<div class="fig ${cls}" title="${tm.code}-${i}" onclick="cycleSticker('${id}',this)">${i}</div>`;
       }
-      card.innerHTML=`<div class="team-header"><div class="team-flag">${tm.flag}</div><div class="team-info"><div class="team-name">${tm.name}</div><div class="team-code">${tm.code} · ${FPT} fig.</div></div><div class="team-pct-badge">0%</div></div><div class="team-bar-wrap"><div class="team-bar-track"><div class="team-bar-fill" style="width:0%"></div></div><div class="team-bar-info"><span>0/${FPT}</span><span>0 rep.</span></div></div><div class="figuritas-grid">${figs}</div>`;
+      card.innerHTML = `<div class="team-header"><div class="team-flag">${tm.flag}</div><div class="team-info"><div class="team-name">${tm.name}</div><div class="team-code">${tm.code} · ${FPT} fig.</div></div><div class="team-pct-badge">0%</div></div><div class="team-bar-wrap"><div class="team-bar-track"><div class="team-bar-fill" style="width:0%"></div></div><div class="team-bar-info"><span>0/${FPT}</span><span>0 rep.</span></div></div><div class="figuritas-grid">${figs}</div>`;
       tg.appendChild(card);
       updateTeamCard(card);
     });
@@ -567,112 +655,75 @@ function buildAlbum(){
   buildCocaCola(cnt);
 }
 
-function buildSpecials(cnt){
-  const sec=document.createElement('div');
-  sec.className='specials-section';
-  let f='';
-  for(let i=0;i<=19;i++){
-    const id='SPEC_'+i,v=st(id),cls=['','have','repeated'][v];
-    f+=`<div class="spec-fig ${cls}" onclick="cycleSpecial('${id}',this)"><span>${i===0?'⭐':'★'}</span><span class="snum">${i===0?'00':'FW'+i}</span></div>`;
+function buildSpecials(cnt) {
+  const sec = document.createElement('div');
+  sec.className = 'specials-section';
+  let f = '';
+  for (let i = 0; i <= 19; i++) {
+    const id = 'SPEC_' + i, v = st(id), cls = ['', 'have', 'repeated'][v];
+    f += `<div class="spec-fig ${cls}" onclick="cycleSpecial('${id}',this)"><span>${i === 0 ? '⭐' : '★'}</span><span class="snum">${i === 0 ? '00' : 'FW' + i}</span></div>`;
   }
-  sec.innerHTML=`<div class="specials-header"><div class="specials-badge">SPECIALS</div><div style="font-size:14px;font-weight:600">Figuritas especiales FIFA</div><div style="margin-left:auto;font-size:11px;color:#64748b">20 figuritas</div></div><div class="specials-figs">${f}</div>`;
+  sec.innerHTML = `<div class="specials-header"><div class="specials-badge">SPECIALS</div><div style="font-size:14px;font-weight:600">Figuritas especiales FIFA</div><div style="margin-left:auto;font-size:11px;color:#64748b">20 figuritas</div></div><div class="specials-figs">${f}</div>`;
   cnt.appendChild(sec);
 }
 
-function buildCocaCola(cnt){
-  const sec=document.createElement('div');
-  sec.className='coca-section';
-  let h=0; CC.forEach(p=>{if(st('CC_'+p.n)>=1)h++;});
-  let cards=CC.map(p=>{
-    const id='CC_'+p.n,v=st(id),cls=['','have','repeated'][v];
-    return`<div class="coca-card ${cls}" onclick="cycleCoca('${id}',this)"><div class="cc-num">CC${p.n}</div><div class="cc-flag">${p.flag}</div><div class="cc-name">${p.name}</div><div class="cc-team">${p.team}</div></div>`;
+function buildCocaCola(cnt) {
+  const sec = document.createElement('div');
+  sec.className = 'coca-section';
+  let h = 0; CC.forEach(p => { if (st('CC_' + p.n) >= 1) h++; });
+  let cards = CC.map(p => {
+    const id = 'CC_' + p.n, v = st(id), cls = ['', 'have', 'repeated'][v];
+    return `<div class="coca-card ${cls}" onclick="cycleCoca('${id}',this)"><div class="cc-num">CC${p.n}</div><div class="cc-flag">${p.flag}</div><div class="cc-name">${p.name}</div><div class="cc-team">${p.team}</div></div>`;
   }).join('');
-  sec.innerHTML=`<div class="coca-header"><div class="coca-badge">COCA-COLA</div><div class="coca-header-title">Figuritas especiales Coca-Cola × Panini</div><div class="coca-header-sub">14 estampas · CC1–CC14</div></div><div class="coca-body"><div class="coca-note">⚠️ No salen en sobres normales. Solo en la promo especial Coca-Cola.</div><div class="coca-progress"><span class="cp-lbl">Progreso</span><div class="coca-bar-track"><div class="coca-bar-fill" id="cocaBar" style="width:${Math.round(h/14*100)}%"></div></div><span class="cp-val" id="cocaCount">${h}/14</span></div><div class="coca-grid">${cards}</div></div>`;
+  sec.innerHTML = `<div class="coca-header"><div class="coca-badge">COCA-COLA</div><div class="coca-header-title">Figuritas especiales Coca-Cola × Panini</div><div class="coca-header-sub">14 estampas · CC1–CC14</div></div><div class="coca-body"><div class="coca-note">⚠️ No salen en sobres normales. Solo en la promo especial Coca-Cola.</div><div class="coca-progress"><span class="cp-lbl">Progreso</span><div class="coca-bar-track"><div class="coca-bar-fill" id="cocaBar" style="width:${Math.round(h / 14 * 100)}%"></div></div><span class="cp-val" id="cocaCount">${h}/14</span></div><div class="coca-grid">${cards}</div></div>`;
   cnt.appendChild(sec);
 }
 
-/* ─ Filters ─ */
-let activeFilter='all';
-function setFilter(f,btn){
-  activeFilter=f;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   applyFilter();
 }
-function applyFilter(){
-  const q=(document.getElementById('searchInput').value||'').toLowerCase();
-  document.querySelectorAll('.team-card').forEach(card=>{
-    const ms=card.dataset.name.includes(q);
-    let mf=true;
-    if(activeFilter!=='all'){
-      let h=0;
-      for(let i=1;i<=FPT;i++){if(st(fid(card.dataset.code,i))>=1)h++;}
-      mf=activeFilter==='complete'?h===FPT:h<FPT;
+
+function applyFilter() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  document.querySelectorAll('.team-card').forEach(card => {
+    const ms = card.dataset.name.includes(q);
+    let mf = true;
+    if (activeFilter !== 'all') {
+      let haveStickers = 0;
+      for (let i = 1; i <= FPT; i++) { if (st(fid(card.dataset.code, i)) >= 1) haveStickers++; }
+      mf = activeFilter === 'complete' ? haveStickers === FPT : haveStickers < FPT;
     }
-    card.style.display=(ms&&mf)?'':'none';
+    card.style.display = (ms && mf) ? '' : 'none';
   });
-  document.querySelectorAll('.group-section').forEach(s=>{
-    const v=Array.from(s.querySelectorAll('.team-card')).some(c=>c.style.display!=='none');
-    s.style.display=v?'':'none';
+  document.querySelectorAll('.group-section').forEach(s => {
+    const v = Array.from(s.querySelectorAll('.team-card')).some(c => c.style.display !== 'none');
+    s.style.display = v ? '' : 'none';
   });
 }
 
-/* ─ Tabs ─ */
-function showTab(tab,btn){
-  document.querySelectorAll('.page-tab').forEach(b=>b.classList.remove('active'));
+function showTab(tab, btn) {
+  document.querySelectorAll('.page-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('tab-album').style.display=tab==='album'?'':'none';
-  document.getElementById('tab-duplicates').style.display=tab==='duplicates'?'':'none';
-  if(tab==='duplicates') buildDups();
+  document.getElementById('tab-album').style.display = tab === 'album' ? '' : 'none';
+  document.getElementById('tab-duplicates').style.display = tab === 'duplicates' ? '' : 'none';
+  if (tab === 'duplicates') buildDups();
 }
-function buildDups(){
-  const tbody=document.getElementById('dupBody'),empty=document.getElementById('dupEmpty'),cnt=document.getElementById('dupCount');
-  const reps=[];
-  GRUPOS.forEach(g=>g.teams.forEach(t=>{
-    for(let i=1;i<=FPT;i++){const id=fid(t.code,i);if(st(id)===2)reps.push({id,team:t.flag+' '+t.name,sec:'Grupo '+g.id});}
+
+function buildDups() {
+  const tbody = document.getElementById('dupBody'), empty = document.getElementById('dupEmpty'), cnt = document.getElementById('dupCount');
+  const reps = [];
+  GRUPOS.forEach(g => g.teams.forEach(t => {
+    for (let i = 1; i <= FPT; i++) { const id = fid(t.code, i); if (st(id) === 2) reps.push({ id, team: t.flag + ' ' + t.name, sec: 'Grupo ' + g.id }); }
   }));
-  for(let i=0;i<=19;i++){const id='SPEC_'+i;if(st(id)===2)reps.push({id,team:'⭐ Especiales FIFA',sec:'Specials'});}
-  CC.forEach(p=>{const id='CC_'+p.n;if(st(id)===2)reps.push({id,team:p.flag+' '+p.name,sec:'Coca-Cola'});});
-  cnt.textContent='('+reps.length+')';
-  if(!reps.length){tbody.innerHTML='';empty.style.display='';return;}
-  empty.style.display='none';
-  tbody.innerHTML=reps.map(r=>`<tr><td><code style="background:#f1f5f9;padding:2px 7px;border-radius:4px;font-size:12px">${r.id}</code></td><td>${r.team}</td><td style="color:#64748b">${r.sec}</td><td><span class="dup-pill">Repetida</span></td></tr>`).join('');
-}
-
-/* ─ Auto-login si hay sesión guardada ─ */
-const savedSession=localStorage.getItem('p26_session');
-if(savedSession){
-  const users=getUsers();
-  if(users[savedSession]){
-    currentUser=savedSession;
-    album=getUserAlbum(savedSession);
-    enterApp();
-  }
-}
-
-// Guardar sesión activa al hacer login
-const _origEnterApp=enterApp;
-// patch para guardar sesión
-function enterApp(){
-  localStorage.setItem('p26_session',currentUser);
-  document.getElementById('authScreen').style.display='none';
-  document.getElementById('appScreen').style.display='block';
-  document.getElementById('hUser').textContent=currentUser;
-  buildAlbum();
-  updateStats();
-  updateSobresUI();
-}
-// patch logout para limpiar sesión
-function doLogout(){
-  localStorage.removeItem('p26_session');
-  currentUser=null;
-  album={sobres:0,stickers:{}};
-  document.getElementById('appScreen').style.display='none';
-  document.getElementById('authScreen').style.display='flex';
-  document.getElementById('groupsContainer').innerHTML='';
-  document.getElementById('lUser').value='';
-  document.getElementById('lPass').value='';
-  showMsg('');
+  for (let i = 0; i <= 19; i++) { const id = 'SPEC_' + i; if (st(id) === 2) reps.push({ id, team: '⭐ Especiales FIFA', sec: 'Specials' }); }
+  CC.forEach(p => { const id = 'CC_' + p.n; if (st(id) === 2) reps.push({ id, team: p.flag + ' ' + p.name, sec: 'Coca-Cola' }); });
+  cnt.textContent = '(' + reps.length + ')';
+  if (!reps.length) { tbody.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = reps.map(r => `<tr><td><code style="background:#f1f5f9;padding:2px 7px;border-radius:4px;font-size:12px">${r.id}</code></td><td>${r.team}</td><td style="color:#64748b">${r.sec}</td><td><span class="dup-pill">Repetida</span></td></tr>`).join('');
 }
 </script>
 </body>
