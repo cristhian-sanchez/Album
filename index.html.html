@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Álbum Panini — Mundial 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#16a34a;--green-light:#dcfce7;--green-dark:#14532d;
+  --amber:#d97706;--amber-light:#fef3c7;
+  --red:#dc2626;--red-light:#fee2e2;
+  --bg:#f8fafc;--surface:#fff;--surface2:#f1f5f9;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --accent:#2563eb;--radius:10px;--radius-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── AUTH ── */
+#authScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f172a;padding:24px;}
+.auth-box{background:#1e293b;border-radius:20px;padding:36px 40px;width:100%;max-width:400px;border:1px solid #334155;}
+.auth-logo{text-align:center;margin-bottom:28px;}
+.auth-logo .ball{font-size:44px;display:block;margin-bottom:10px;}
+.auth-logo h1{font-family:'JetBrains Mono',monospace;font-size:17px;color:#fff;font-weight:600;letter-spacing:-.02em;}
+.auth-logo p{font-size:12px;color:#64748b;margin-top:5px;}
+.auth-tabs{display:flex;background:#0f172a;border-radius:var(--radius);padding:4px;margin-bottom:22px;gap:4px;}
+.auth-tab{flex:1;padding:8px;border:none;background:transparent;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;border-radius:7px;transition:all .15s;}
+.auth-tab.active{background:#334155;color:#fff;}
+.auth-field{margin-bottom:14px;}
+.auth-field label{display:block;font-size:12px;color:#94a3b8;margin-bottom:6px;font-weight:500;letter-spacing:.02em;}
+.auth-field input{width:100%;padding:11px 14px;background:#0f172a;border:1.5px solid #334155;border-radius:var(--radius);font-family:'Space Grotesk',sans-serif;font-size:14px;color:#f1f5f9;outline:none;transition:border-color .15s;}
+.auth-field input:focus{border-color:var(--accent);}
+.auth-field input::placeholder{color:#334155;}
+.auth-btn{width:100%;padding:12px;background:var(--green);border:none;border-radius:var(--radius);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:#fff;cursor:pointer;transition:opacity .15s;margin-top:4px;}
+.auth-btn:hover{opacity:.88;}
+.auth-msg{border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
+.auth-msg.error{background:#7f1d1d;border:1px solid #dc2626;color:#fca5a5;}
+.auth-msg.success{background:#14532d;border:1px solid #16a34a;color:#86efac;}
+
+/* ── APP ── */
+#appScreen{display:none;}
+.site-header{background:#0f172a;color:#fff;padding:0 24px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:58px;border-bottom:1px solid #1e293b;}
+.logo{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:15px;color:#fff;display:flex;align-items:center;gap:10px;}
+.logo-badge{background:var(--green);color:#fff;font-size:10px;padding:2px 8px;border-radius:99px;font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:.04em;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.header-user{font-size:13px;color:#64748b;}
+.header-user b{color:#e2e8f0;}
+.header-pct{font-family:'JetBrains Mono',monospace;font-size:13px;color:#475569;}
+.header-pct b{color:#4ade80;}
+.logout-btn{padding:5px 12px;border-radius:7px;border:1px solid #334155;background:transparent;font-size:12px;color:#94a3b8;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .15s;}
+.logout-btn:hover{background:#334155;color:#fff;}
+
+.hero{background:#0f172a;padding:28px 24px 32px;border-bottom:1px solid #1e293b;}
+.hero-inner{max-width:1100px;margin:0 auto;}
+.hero-title{font-size:26px;font-weight:700;color:#fff;letter-spacing:-.03em;margin-bottom:6px;}
+.hero-sub{font-size:13px;color:#475569;margin-bottom:22px;}
+.big-progress{background:#1e293b;border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:18px;display:flex;align-items:center;gap:24px;}
+.big-pct{font-family:'JetBrains Mono',monospace;font-size:46px;font-weight:600;color:#4ade80;line-height:1;min-width:110px;}
+.big-progress-right{flex:1;}
+.big-progress-right .lbl{font-size:12px;color:#475569;margin-bottom:10px;}
+.bar-track{background:#0f172a;border-radius:99px;height:11px;overflow:hidden;margin-bottom:8px;}
+.bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#16a34a,#4ade80);transition:width .4s;}
+.bar-text{font-size:12px;color:#334155;}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;}
+.stat-box{background:#1e293b;border-radius:var(--radius);padding:14px 16px;}
+.stat-box .lbl{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.stat-box .val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:#f1f5f9;}
+.stat-box .sub{font-size:11px;color:#334155;margin-top:2px;}
+.stat-box.green .val{color:#4ade80;}
+.stat-box.amber .val{color:#fbbf24;}
+.stat-box.blue .val{color:#60a5fa;}
+
+.controls-bar{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:58px;z-index:90;padding:10px 24px;}
+.controls-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.search-wrap{position:relative;flex:1;min-width:160px;}
+.search-wrap input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;font-family:'Space Grotesk',sans-serif;background:var(--surface2);color:var(--text);outline:none;}
+.search-wrap input:focus{border-color:var(--accent);background:#fff;}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text3);}
+.filter-btn{padding:7px 13px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface2);font-size:12px;font-family:'Space Grotesk',sans-serif;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent);}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.sobre-wrap{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.sobre-wrap label{font-size:12px;color:var(--text2);white-space:nowrap;}
+.sobre-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .15s;}
+.sobre-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.sobre-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;min-width:32px;text-align:center;}
+
+.main{max-width:1100px;margin:0 auto;padding:24px 24px;}
+.page-tabs{display:flex;gap:4px;margin-bottom:22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:4px;width:fit-content;}
+.page-tab{padding:7px 18px;border-radius:7px;border:none;background:transparent;font-size:13px;font-family:'Space Grotesk',sans-serif;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;}
+.page-tab.active{background:var(--text);color:#fff;}
+.page-tab:hover:not(.active){background:var(--surface2);}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;color:var(--text2);}
+.leg-item{display:flex;align-items:center;gap:6px;}
+.leg-box{width:13px;height:13px;border-radius:3px;border:1.5px solid;}
+.leg-miss{background:var(--surface2);border-color:var(--border2);}
+.leg-have{background:var(--green-light);border-color:var(--green);}
+.leg-rep{background:var(--amber-light);border-color:var(--amber);}
+
+.group-section{margin-bottom:32px;}
+.group-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.group-badge{background:var(--text);color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:5px 12px;border-radius:var(--radius);letter-spacing:.05em;}
+.group-name{font-size:17px;font-weight:700;letter-spacing:-.02em;}
+.group-progress-pill{margin-left:auto;font-size:12px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);padding:4px 12px;border-radius:99px;}
+.group-progress-pill b{color:var(--green);}
+.teams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+.team-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:box-shadow .2s;}
+.team-card:hover{box-shadow:0 4px 18px rgba(0,0,0,.07);}
+.team-header{padding:12px 14px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.team-flag{font-size:24px;line-height:1;}
+.team-info{flex:1;min-width:0;}
+.team-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.team-code{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);}
+.team-pct-badge{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 7px;border-radius:6px;background:var(--surface2);color:var(--text2);min-width:38px;text-align:center;}
+.team-pct-badge.done{background:var(--green-light);color:var(--green-dark);}
+.team-pct-badge.good{background:#dbeafe;color:#1d4ed8;}
+.team-bar-wrap{padding:9px 14px 5px;}
+.team-bar-track{background:var(--surface2);border-radius:99px;height:4px;overflow:hidden;}
+.team-bar-fill{height:100%;border-radius:99px;background:var(--green);transition:width .3s;}
+.team-bar-info{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text3);}
+.figuritas-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;padding:8px 12px 12px;}
+.fig{aspect-ratio:1;border-radius:4px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;font-family:'JetBrains Mono',monospace;font-weight:600;cursor:pointer;transition:transform .1s;user-select:none;color:var(--text3);background:var(--surface2);}
+.fig:hover{transform:scale(1.18);z-index:2;}
+.fig.have{background:var(--green-light);border-color:var(--green);color:var(--green-dark);}
+.fig.repeated{background:var(--amber-light);border-color:var(--amber);color:#92400e;}
+
+.specials-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:32px;}
+.specials-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.specials-badge{background:#7c3aed;color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 11px;border-radius:6px;font-weight:600;}
+.specials-figs{display:flex;flex-wrap:wrap;gap:5px;padding:12px 18px 16px;}
+.spec-fig{width:34px;height:40px;border-radius:6px;border:1.5px solid #ddd6fe;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:8px;font-family:'JetBrains Mono',monospace;font-weight:600;cursor:pointer;transition:transform .1s;user-select:none;color:#6d28d9;background:#f5f3ff;gap:2px;}
+.spec-fig:hover{transform:scale(1.1);}
+.spec-fig.have{background:#ede9fe;border-color:#7c3aed;}
+.spec-fig.repeated{background:var(--amber-light);border-color:var(--amber);color:#92400e;}
+.spec-fig .snum{font-size:7px;color:#a78bfa;}
+.spec-fig.have .snum{color:#7c3aed;}
+
+.coca-section{background:var(--surface);border:2px solid #dc2626;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:32px;}
+.coca-header{background:#dc2626;padding:14px 18px;display:flex;align-items:center;gap:12px;}
+.coca-badge{background:#fff;color:#dc2626;font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:6px;font-weight:700;}
+.coca-header-title{font-size:14px;font-weight:700;color:#fff;}
+.coca-header-sub{margin-left:auto;font-size:11px;color:rgba(255,255,255,.7);}
+.coca-body{padding:14px 18px 18px;}
+.coca-note{font-size:12px;color:var(--text3);background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:9px 13px;margin-bottom:12px;}
+.coca-progress{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.coca-progress .cp-lbl{font-size:13px;color:var(--text2);flex:1;}
+.coca-progress .cp-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:#dc2626;}
+.coca-bar-track{flex:2;background:#fee2e2;border-radius:99px;height:6px;overflow:hidden;}
+.coca-bar-fill{height:100%;border-radius:99px;background:#dc2626;transition:width .3s;}
+.coca-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:7px;}
+.coca-card{background:var(--surface2);border:1.5px solid #fecaca;border-radius:var(--radius);padding:9px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:transform .1s;user-select:none;text-align:center;}
+.coca-card:hover{transform:scale(1.04);}
+.coca-card.have{background:#fff5f5;border-color:#dc2626;}
+.coca-card.repeated{background:var(--amber-light);border-color:var(--amber);}
+.coca-card .cc-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#dc2626;background:#fee2e2;padding:1px 6px;border-radius:4px;}
+.coca-card.have .cc-num{background:#dc2626;color:#fff;}
+.coca-card.repeated .cc-num{background:var(--amber);color:#fff;}
+.coca-card .cc-flag{font-size:17px;}
+.coca-card .cc-name{font-size:10px;font-weight:600;color:var(--text);line-height:1.2;}
+.coca-card .cc-team{font-size:9px;color:var(--text3);}
+
+.dup-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+.dup-panel-header{padding:14px 18px;border-bottom:1px solid var(--border);font-size:15px;font-weight:600;}
+.dup-table{width:100%;border-collapse:collapse;}
+.dup-table th{padding:9px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);border-bottom:1px solid var(--border);background:var(--surface2);}
+.dup-table td{padding:9px 14px;font-size:13px;border-bottom:1px solid var(--border);}
+.dup-table tr:last-child td{border-bottom:none;}
+.dup-table tr:hover td{background:var(--surface2);}
+.dup-pill{background:var(--amber-light);color:#92400e;font-size:11px;padding:2px 9px;border-radius:99px;font-weight:600;border:1px solid var(--amber);}
+.empty-dup{padding:32px;text-align:center;font-size:14px;color:var(--text3);}
+
+.save-toast{position:fixed;bottom:20px;right:20px;background:#0f172a;color:#4ade80;font-size:12px;padding:8px 16px;border-radius:99px;font-family:'JetBrains Mono',monospace;opacity:0;transition:opacity .3s;z-index:999;pointer-events:none;}
+.save-toast.show{opacity:1;}
+
+@media(max-width:600px){
+  .big-progress{flex-direction:column;gap:12px;}.big-pct{font-size:36px;}
+  .teams-grid{grid-template-columns:1fr 1fr;}.hero-title{font-size:21px;}
+  .auth-box{padding:26px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <span class="ball">⚽</span>
+      <h1>PANINI MUNDIAL 2026</h1>
+      <p>Registra tu progreso y compara con amigos</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLoginBtn" onclick="switchTab('login')">Iniciar sesión</button>
+      <button class="auth-tab" id="tabRegBtn" onclick="switchTab('register')">Crear cuenta</button>
+    </div>
+    <div class="auth-msg" id="authMsg"></div>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <div class="auth-field">
+        <label>USUARIO</label>
+        <input id="lUser" type="text" placeholder="tu_usuario" autocomplete="username" />
+      </div>
+      <div class="auth-field">
+        <label>CONTRASEÑA</label>
+        <input id="lPass" type="password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Entrar →</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerForm" style="display:none">
+      <div class="auth-field">
+        <label>USUARIO <span style="color:#334155;font-size:10px;">(2-20 chars: letras/números/_)</span></label>
+        <input id="rUser" type="text" placeholder="mi_usuario" autocomplete="username" />
+      </div>
+      <div class="auth-field">
+        <label>CONTRASEÑA <span style="color:#334155;font-size:10px;">(mín. 4 chars)</span></label>
+        <input id="rPass" type="password" placeholder="••••••••" autocomplete="new-password" />
+      </div>
+      <div class="auth-field">
+        <label>CONFIRMAR CONTRASEÑA</label>
+        <input id="rPass2" type="password" placeholder="••••••••" autocomplete="new-password" />
+      </div>
+      <button class="auth-btn" onclick="doRegister()">Crear cuenta →</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen">
+  <header class="site-header">
+    <div class="logo">⚽ PANINI 2026 <span class="logo-badge">MUNDIAL</span></div>
+    <div class="header-right">
+      <div class="header-user">👤 <b id="hUser"></b></div>
+      <div class="header-pct">Completo: <b id="hPct">0%</b></div>
+      <button class="logout-btn" onclick="doLogout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <h1 class="hero-title">Mi Álbum — Copa Mundial FIFA 2026</h1>
+      <p class="hero-sub">1 clic = tengo · 2 clics = repetida · 3 clics = quitar</p>
+      <div class="big-progress">
+        <div class="big-pct" id="bigPct">0%</div>
+        <div class="big-progress-right">
+          <div class="lbl">Progreso total (994 figuritas)</div>
+          <div class="bar-track"><div class="bar-fill" id="mainBar" style="width:0%"></div></div>
+          <div class="bar-text" id="mainBarText">0 de 994</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box green"><div class="lbl">✓ Tengo</div><div class="val" id="sHave">0</div><div class="sub">figuritas</div></div>
+        <div class="stat-box"><div class="lbl">✗ Faltan</div><div class="val" id="sMiss">994</div><div class="sub">figuritas</div></div>
+        <div class="stat-box amber"><div class="lbl">↺ Repetidas</div><div class="val" id="sRep">0</div><div class="sub">para cambiar</div></div>
+        <div class="stat-box blue"><div class="lbl">📦 Sobres</div><div class="val" id="sSobres">0</div><div class="sub" id="sSobresInfo">≈ 0 figuritas</div></div>
+        <div class="stat-box"><div class="lbl">🏆 Grupos</div><div class="val" id="sGroups">0/12</div><div class="sub">completos</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls-bar">
+    <div class="controls-inner">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar equipo..." oninput="applyFilter()" />
+      </div>
+      <button class="filter-btn active" onclick="setFilter('all',this)">Todos</button>
+      <button class="filter-btn" onclick="setFilter('incomplete',this)">Incompletos</button>
+      <button class="filter-btn" onclick="setFilter('complete',this)">Completos</button>
+      <div class="sobre-wrap">
+        <label>📦 Sobres:</label>
+        <button class="sobre-btn" onclick="changeSobres(-1)">−</button>
+        <span class="sobre-val" id="sobresDisp">0</span>
+        <button class="sobre-btn" onclick="changeSobres(1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="page-tabs">
+      <button class="page-tab active" onclick="showTab('album',this)">📘 Álbum</button>
+      <button class="page-tab" onclick="showTab('duplicates',this)">🔄 Repetidas</button>
+    </div>
+    <div id="tab-album">
+      <div class="legend">
+        <div class="leg-item"><div class="leg-box leg-miss"></div>Falta</div>
+        <div class="leg-item"><div class="leg-box leg-have"></div>Tengo</div>
+        <div class="leg-item"><div class="leg-box leg-rep"></div>Repetida</div>
+        <span style="color:#94a3b8;font-size:11px;margin-left:6px;">3 clics = desmarcar</span>
+      </div>
+      <div id="groupsContainer"></div>
+    </div>
+    <div id="tab-duplicates" style="display:none">
+      <div class="dup-panel">
+        <div class="dup-panel-header">🔄 Repetidas <span style="font-size:13px;font-weight:400;color:#64748b" id="dupCount">(0)</span></div>
+        <table class="dup-table">
+          <thead><tr><th>ID</th><th>Equipo / Jugador</th><th>Sección</th><th>Estado</th></tr></thead>
+          <tbody id="dupBody"></tbody>
+        </table>
+        <div class="empty-dup" id="dupEmpty">No tienes repetidas aún 🎉</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="save-toast" id="toast">✓ Guardado</div>
+
+<script>
+/* ═══════════ DATOS ═══════════ */
+const GRUPOS=[
+  {id:'A',label:'Grupo A',teams:[{name:'Chequia',code:'CZE',flag:'🇨🇿'},{name:'México',code:'MEX',flag:'🇲🇽'},{name:'Sudáfrica',code:'RSA',flag:'🇿🇦'},{name:'Corea del Sur',code:'KOR',flag:'🇰🇷'}]},
+  {id:'B',label:'Grupo B',teams:[{name:'Bosnia y Herzegovina',code:'BIH',flag:'🇧🇦'},{name:'Canadá',code:'CAN',flag:'🇨🇦'},{name:'Catar',code:'QAT',flag:'🇶🇦'},{name:'Suiza',code:'SUI',flag:'🇨🇭'}]},
+  {id:'C',label:'Grupo C',teams:[{name:'Brasil',code:'BRA',flag:'🇧🇷'},{name:'Haití',code:'HAI',flag:'🇭🇹'},{name:'Marruecos',code:'MAR',flag:'🇲🇦'},{name:'Escocia',code:'SCO',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'}]},
+  {id:'D',label:'Grupo D',teams:[{name:'Australia',code:'AUS',flag:'🇦🇺'},{name:'Paraguay',code:'PAR',flag:'🇵🇾'},{name:'Turquía',code:'TUR',flag:'🇹🇷'},{name:'Estados Unidos',code:'USA',flag:'🇺🇸'}]},
+  {id:'E',label:'Grupo E',teams:[{name:'Curazao',code:'CUW',flag:'🇨🇼'},{name:'Ecuador',code:'ECU',flag:'🇪🇨'},{name:'Alemania',code:'GER',flag:'🇩🇪'},{name:'Costa de Marfil',code:'CIV',flag:'🇨🇮'}]},
+  {id:'F',label:'Grupo F',teams:[{name:'Japón',code:'JAP',flag:'🇯🇵'},{name:'Países Bajos',code:'NED',flag:'🇳🇱'},{name:'Suecia',code:'SWE',flag:'🇸🇪'},{name:'Túnez',code:'TUN',flag:'🇹🇳'}]},
+  {id:'G',label:'Grupo G',teams:[{name:'Bélgica',code:'BEL',flag:'🇧🇪'},{name:'Egipto',code:'EGY',flag:'🇪🇬'},{name:'Irán',code:'IRN',flag:'🇮🇷'},{name:'Nueva Zelanda',code:'NZL',flag:'🇳🇿'}]},
+  {id:'H',label:'Grupo H',teams:[{name:'Cabo Verde',code:'CPV',flag:'🇨🇻'},{name:'Arabia Saudita',code:'KSA',flag:'🇸🇦'},{name:'España',code:'ESP',flag:'🇪🇸'},{name:'Uruguay',code:'URU',flag:'🇺🇾'}]},
+  {id:'I',label:'Grupo I',teams:[{name:'Francia',code:'FRA',flag:'🇫🇷'},{name:'Irak',code:'IRQ',flag:'🇮🇶'},{name:'Noruega',code:'NOR',flag:'🇳🇴'},{name:'Senegal',code:'SEN',flag:'🇸🇳'}]},
+  {id:'J',label:'Grupo J',teams:[{name:'Argelia',code:'ALG',flag:'🇩🇿'},{name:'Argentina',code:'ARG',flag:'🇦🇷'},{name:'Austria',code:'AUT',flag:'🇦🇹'},{name:'Jordania',code:'JOR',flag:'🇯🇴'}]},
+  {id:'K',label:'Grupo K',teams:[{name:'Colombia',code:'COL',flag:'🇨🇴'},{name:'RD del Congo',code:'COD',flag:'🇨🇩'},{name:'Portugal',code:'POR',flag:'🇵🇹'},{name:'Uzbekistán',code:'UZB',flag:'🇺🇿'}]},
+  {id:'L',label:'Grupo L',teams:[{name:'Croacia',code:'CRO',flag:'🇭🇷'},{name:'Inglaterra',code:'ENG',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},{name:'Ghana',code:'GHA',flag:'🇬🇭'},{name:'Panamá',code:'PAN',flag:'🇵🇦'}]},
+];
+const CC=[
+  {n:1,name:'Lamine Yamal',team:'España',flag:'🇪🇸'},
+  {n:2,name:'Joshua Kimmich',team:'Alemania',flag:'🇩🇪'},
+  {n:3,name:'Harry Kane',team:'Inglaterra',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
+  {n:4,name:'Santiago Giménez',team:'México',flag:'🇲🇽'},
+  {n:5,name:'Josko Gvardiol',team:'Croacia',flag:'🇭🇷'},
+  {n:6,name:'Federico Valverde',team:'Uruguay',flag:'🇺🇾'},
+  {n:7,name:'Jefferson Lerma',team:'Colombia',flag:'🇨🇴'},
+  {n:8,name:'Enner Valencia',team:'Ecuador',flag:'🇪🇨'},
+  {n:9,name:'Gabriel Magalhães',team:'Brasil',flag:'🇧🇷'},
+  {n:10,name:'Virgil van Dijk',team:'Países Bajos',flag:'🇳🇱'},
+  {n:11,name:'Alphonso Davies',team:'Canadá',flag:'🇨🇦'},
+  {n:12,name:'Emiliano Martínez',team:'Argentina',flag:'🇦🇷'},
+  {n:13,name:'Raúl Jiménez',team:'México',flag:'🇲🇽'},
+  {n:14,name:'Lautaro Martínez',team:'Argentina',flag:'🇦🇷'},
+];
+const FPT=20, TOTAL=994;
+
+/* ═══════════ STORAGE HELPERS ═══════════ */
+// Guarda usuarios y álbumes en localStorage con clave única por usuario
+function lsGet(key){try{return JSON.parse(localStorage.getItem(key))}catch(e){return null}}
+function lsSet(key,val){try{localStorage.setItem(key,JSON.stringify(val))}catch(e){}}
+function getUsers(){return lsGet('p26_users')||{}}
+function saveUsers(u){lsSet('p26_users',u)}
+function getUserAlbum(user){return lsGet('p26_album_'+user)||{sobres:0,stickers:{}}}
+function saveUserAlbum(user,data){lsSet('p26_album_'+user,data)}
+
+/* ═══════════ SIMPLE HASH ═══════════ */
+function simpleHash(str){
+  // djb2 — no es crypto real pero suficiente para este uso local
+  let h=5381;
+  for(let i=0;i<str.length;i++) h=((h<<5)+h)+str.charCodeAt(i);
+  return (h>>>0).toString(36);
+}
+
+/* ═══════════ AUTH ═══════════ */
+let currentUser=null;
+let album={sobres:0,stickers:{}};
+
+function showMsg(msg,type){
+  const el=document.getElementById('authMsg');
+  el.className='auth-msg '+(type||'error');
+  el.textContent=msg;
+  el.style.display=msg?'block':'none';
+}
+function switchTab(tab){
+  const isLogin=tab==='login';
+  document.getElementById('tabLoginBtn').classList.toggle('active',isLogin);
+  document.getElementById('tabRegBtn').classList.toggle('active',!isLogin);
+  document.getElementById('loginForm').style.display=isLogin?'':'none';
+  document.getElementById('registerForm').style.display=isLogin?'none':'';
+  showMsg('');
+}
+
+function doRegister(){
+  const user=document.getElementById('rUser').value.trim().toLowerCase();
+  const pass=document.getElementById('rPass').value;
+  const pass2=document.getElementById('rPass2').value;
+  if(!user||!/^[a-z0-9_\-]{2,20}$/.test(user)){return showMsg('Usuario inválido. Usa 2-20 caracteres: letras, números, _ o -');}
+  if(pass.length<4){return showMsg('La contraseña debe tener al menos 4 caracteres.');}
+  if(pass!==pass2){return showMsg('Las contraseñas no coinciden.');}
+  const users=getUsers();
+  if(users[user]){return showMsg('Ese usuario ya existe. Elige otro nombre.');}
+  users[user]=simpleHash(pass+'_p26_'+user);
+  saveUsers(users);
+  saveUserAlbum(user,{sobres:0,stickers:{}});
+  showMsg('✓ Cuenta creada. Ahora inicia sesión.','success');
+  document.getElementById('rUser').value='';
+  document.getElementById('rPass').value='';
+  document.getElementById('rPass2').value='';
+  setTimeout(()=>switchTab('login'),1400);
+}
+
+function doLogin(){
+  const user=document.getElementById('lUser').value.trim().toLowerCase();
+  const pass=document.getElementById('lPass').value;
+  if(!user||!pass){return showMsg('Completa usuario y contraseña.');}
+  const users=getUsers();
+  if(!users[user]){return showMsg('Usuario no encontrado.');}
+  if(users[user]!==simpleHash(pass+'_p26_'+user)){return showMsg('Contraseña incorrecta.');}
+  currentUser=user;
+  album=getUserAlbum(user);
+  showMsg('');
+  enterApp();
+}
+
+function doLogout(){
+  currentUser=null;
+  album={sobres:0,stickers:{}};
+  document.getElementById('appScreen').style.display='none';
+  document.getElementById('authScreen').style.display='flex';
+  document.getElementById('groupsContainer').innerHTML='';
+  document.getElementById('lUser').value='';
+  document.getElementById('lPass').value='';
+  showMsg('');
+}
+
+// Enter key
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  if(document.getElementById('loginForm').style.display!=='none') doLogin();
+  else doRegister();
+});
+
+/* ═══════════ APP ═══════════ */
+function enterApp(){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  document.getElementById('hUser').textContent=currentUser;
+  buildAlbum();
+  updateStats();
+  updateSobresUI();
+}
+
+let saveTimer=null;
+function saveAlbum(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    saveUserAlbum(currentUser,album);
+    const t=document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),1400);
+  },500);
+}
+
+function fid(code,n){return code+'_'+n;}
+function st(id){return album.stickers[id]||0;}
+
+function cycleSticker(id,el){
+  const n=st(id)>=2?0:st(id)+1;
+  if(n===0) delete album.stickers[id]; else album.stickers[id]=n;
+  el.className='fig '+['','have','repeated'][n];
+  updateStats(); saveAlbum();
+  updateTeamCard(el.closest('.team-card'));
+}
+function cycleSpecial(id,el){
+  const n=st(id)>=2?0:st(id)+1;
+  if(n===0) delete album.stickers[id]; else album.stickers[id]=n;
+  el.className='spec-fig '+['','have','repeated'][n];
+  updateStats(); saveAlbum();
+}
+function cycleCoca(id,el){
+  const n=st(id)>=2?0:st(id)+1;
+  if(n===0) delete album.stickers[id]; else album.stickers[id]=n;
+  el.className='coca-card '+['','have','repeated'][n];
+  updateStats(); saveAlbum();
+  let h=0; CC.forEach(p=>{if(st('CC_'+p.n)>=1)h++;});
+  const b=document.getElementById('cocaBar'),c=document.getElementById('cocaCount');
+  if(b) b.style.width=Math.round(h/14*100)+'%';
+  if(c) c.textContent=h+'/14';
+}
+
+function updateTeamCard(card){
+  if(!card) return;
+  const code=card.dataset.code;
+  let have=0,reps=0;
+  for(let i=1;i<=FPT;i++){const v=st(fid(code,i));if(v>=1)have++;if(v===2)reps++;}
+  const pct=Math.round(have/FPT*100);
+  const fill=card.querySelector('.team-bar-fill');
+  const i1=card.querySelector('.team-bar-info span:first-child');
+  const i2=card.querySelector('.team-bar-info span:last-child');
+  const badge=card.querySelector('.team-pct-badge');
+  if(fill) fill.style.width=pct+'%';
+  if(i1) i1.textContent=have+'/'+FPT;
+  if(i2) i2.textContent=reps+' rep.';
+  if(badge){badge.textContent=pct+'%';badge.className='team-pct-badge'+(pct===100?' done':pct>=50?' good':'');}
+  updateGroupHeader(card.closest('.group-section'));
+}
+function updateGroupHeader(sec){
+  if(!sec) return;
+  const g=GRUPOS.find(x=>x.id===sec.dataset.group);
+  if(!g) return;
+  let h=0,t=g.teams.length*FPT;
+  g.teams.forEach(tm=>{for(let i=1;i<=FPT;i++){if(st(fid(tm.code,i))>=1)h++;}});
+  const pill=sec.querySelector('.group-progress-pill');
+  if(pill) pill.innerHTML='<b>'+h+'/'+t+'</b> · '+Math.round(h/t*100)+'%';
+}
+
+function calcAll(){
+  let have=0,rep=0;
+  Object.values(album.stickers).forEach(v=>{if(v===1)have++;else if(v===2){have++;rep++;}});
+  return{have,rep,miss:TOTAL-have};
+}
+function updateStats(){
+  const{have,rep,miss}=calcAll();
+  const pct=Math.round(have/TOTAL*100);
+  ['bigPct','hPct'].forEach(id=>document.getElementById(id).textContent=pct+'%');
+  document.getElementById('mainBar').style.width=pct+'%';
+  document.getElementById('mainBarText').textContent=have+' de '+TOTAL;
+  document.getElementById('sHave').textContent=have;
+  document.getElementById('sMiss').textContent=miss;
+  document.getElementById('sRep').textContent=rep;
+  let done=0;
+  GRUPOS.forEach(g=>{
+    let h=0; g.teams.forEach(t=>{for(let i=1;i<=FPT;i++){if(st(fid(t.code,i))>=1)h++;}});
+    if(h===g.teams.length*FPT)done++;
+  });
+  document.getElementById('sGroups').textContent=done+'/12';
+}
+
+function changeSobres(d){
+  album.sobres=Math.max(0,(album.sobres||0)+d);
+  updateSobresUI(); saveAlbum();
+}
+function updateSobresUI(){
+  const s=album.sobres||0;
+  document.getElementById('sobresDisp').textContent=s;
+  document.getElementById('sSobres').textContent=s;
+  document.getElementById('sSobresInfo').textContent='≈'+(s*7)+' figuritas';
+}
+
+/* ═══════════ BUILD DOM ═══════════ */
+function buildAlbum(){
+  const cnt=document.getElementById('groupsContainer');
+  cnt.innerHTML='';
+  GRUPOS.forEach(g=>{
+    const sec=document.createElement('div');
+    sec.className='group-section'; sec.dataset.group=g.id;
+    const tot=g.teams.length*FPT;
+    sec.innerHTML=`<div class="group-header"><div class="group-badge">GRUPO ${g.id}</div><div class="group-name">${g.label}</div><div class="group-progress-pill"><b>0/${tot}</b> · 0%</div></div><div class="teams-grid" id="tg-${g.id}"></div>`;
+    cnt.appendChild(sec);
+    const tg=sec.querySelector('.teams-grid');
+    g.teams.forEach(tm=>{
+      const card=document.createElement('div');
+      card.className='team-card'; card.dataset.code=tm.code; card.dataset.name=tm.name.toLowerCase(); card.dataset.group=g.id;
+      let figs='';
+      for(let i=1;i<=FPT;i++){
+        const id=fid(tm.code,i),v=st(id),cls=['','have','repeated'][v];
+        figs+=`<div class="fig ${cls}" title="${tm.code}-${i}" onclick="cycleSticker('${id}',this)">${i}</div>`;
+      }
+      card.innerHTML=`<div class="team-header"><div class="team-flag">${tm.flag}</div><div class="team-info"><div class="team-name">${tm.name}</div><div class="team-code">${tm.code} · ${FPT} fig.</div></div><div class="team-pct-badge">0%</div></div><div class="team-bar-wrap"><div class="team-bar-track"><div class="team-bar-fill" style="width:0%"></div></div><div class="team-bar-info"><span>0/${FPT}</span><span>0 rep.</span></div></div><div class="figuritas-grid">${figs}</div>`;
+      tg.appendChild(card);
+      updateTeamCard(card);
+    });
+    updateGroupHeader(sec);
+  });
+  buildSpecials(cnt);
+  buildCocaCola(cnt);
+}
+
+function buildSpecials(cnt){
+  const sec=document.createElement('div');
+  sec.className='specials-section';
+  let f='';
+  for(let i=0;i<=19;i++){
+    const id='SPEC_'+i,v=st(id),cls=['','have','repeated'][v];
+    f+=`<div class="spec-fig ${cls}" onclick="cycleSpecial('${id}',this)"><span>${i===0?'⭐':'★'}</span><span class="snum">${i===0?'00':'FW'+i}</span></div>`;
+  }
+  sec.innerHTML=`<div class="specials-header"><div class="specials-badge">SPECIALS</div><div style="font-size:14px;font-weight:600">Figuritas especiales FIFA</div><div style="margin-left:auto;font-size:11px;color:#64748b">20 figuritas</div></div><div class="specials-figs">${f}</div>`;
+  cnt.appendChild(sec);
+}
+
+function buildCocaCola(cnt){
+  const sec=document.createElement('div');
+  sec.className='coca-section';
+  let h=0; CC.forEach(p=>{if(st('CC_'+p.n)>=1)h++;});
+  let cards=CC.map(p=>{
+    const id='CC_'+p.n,v=st(id),cls=['','have','repeated'][v];
+    return`<div class="coca-card ${cls}" onclick="cycleCoca('${id}',this)"><div class="cc-num">CC${p.n}</div><div class="cc-flag">${p.flag}</div><div class="cc-name">${p.name}</div><div class="cc-team">${p.team}</div></div>`;
+  }).join('');
+  sec.innerHTML=`<div class="coca-header"><div class="coca-badge">COCA-COLA</div><div class="coca-header-title">Figuritas especiales Coca-Cola × Panini</div><div class="coca-header-sub">14 estampas · CC1–CC14</div></div><div class="coca-body"><div class="coca-note">⚠️ No salen en sobres normales. Solo en la promo especial Coca-Cola.</div><div class="coca-progress"><span class="cp-lbl">Progreso</span><div class="coca-bar-track"><div class="coca-bar-fill" id="cocaBar" style="width:${Math.round(h/14*100)}%"></div></div><span class="cp-val" id="cocaCount">${h}/14</span></div><div class="coca-grid">${cards}</div></div>`;
+  cnt.appendChild(sec);
+}
+
+/* ─ Filters ─ */
+let activeFilter='all';
+function setFilter(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilter();
+}
+function applyFilter(){
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  document.querySelectorAll('.team-card').forEach(card=>{
+    const ms=card.dataset.name.includes(q);
+    let mf=true;
+    if(activeFilter!=='all'){
+      let h=0;
+      for(let i=1;i<=FPT;i++){if(st(fid(card.dataset.code,i))>=1)h++;}
+      mf=activeFilter==='complete'?h===FPT:h<FPT;
+    }
+    card.style.display=(ms&&mf)?'':'none';
+  });
+  document.querySelectorAll('.group-section').forEach(s=>{
+    const v=Array.from(s.querySelectorAll('.team-card')).some(c=>c.style.display!=='none');
+    s.style.display=v?'':'none';
+  });
+}
+
+/* ─ Tabs ─ */
+function showTab(tab,btn){
+  document.querySelectorAll('.page-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-album').style.display=tab==='album'?'':'none';
+  document.getElementById('tab-duplicates').style.display=tab==='duplicates'?'':'none';
+  if(tab==='duplicates') buildDups();
+}
+function buildDups(){
+  const tbody=document.getElementById('dupBody'),empty=document.getElementById('dupEmpty'),cnt=document.getElementById('dupCount');
+  const reps=[];
+  GRUPOS.forEach(g=>g.teams.forEach(t=>{
+    for(let i=1;i<=FPT;i++){const id=fid(t.code,i);if(st(id)===2)reps.push({id,team:t.flag+' '+t.name,sec:'Grupo '+g.id});}
+  }));
+  for(let i=0;i<=19;i++){const id='SPEC_'+i;if(st(id)===2)reps.push({id,team:'⭐ Especiales FIFA',sec:'Specials'});}
+  CC.forEach(p=>{const id='CC_'+p.n;if(st(id)===2)reps.push({id,team:p.flag+' '+p.name,sec:'Coca-Cola'});});
+  cnt.textContent='('+reps.length+')';
+  if(!reps.length){tbody.innerHTML='';empty.style.display='';return;}
+  empty.style.display='none';
+  tbody.innerHTML=reps.map(r=>`<tr><td><code style="background:#f1f5f9;padding:2px 7px;border-radius:4px;font-size:12px">${r.id}</code></td><td>${r.team}</td><td style="color:#64748b">${r.sec}</td><td><span class="dup-pill">Repetida</span></td></tr>`).join('');
+}
+
+/* ─ Auto-login si hay sesión guardada ─ */
+const savedSession=localStorage.getItem('p26_session');
+if(savedSession){
+  const users=getUsers();
+  if(users[savedSession]){
+    currentUser=savedSession;
+    album=getUserAlbum(savedSession);
+    enterApp();
+  }
+}
+
+// Guardar sesión activa al hacer login
+const _origEnterApp=enterApp;
+// patch para guardar sesión
+function enterApp(){
+  localStorage.setItem('p26_session',currentUser);
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  document.getElementById('hUser').textContent=currentUser;
+  buildAlbum();
+  updateStats();
+  updateSobresUI();
+}
+// patch logout para limpiar sesión
+function doLogout(){
+  localStorage.removeItem('p26_session');
+  currentUser=null;
+  album={sobres:0,stickers:{}};
+  document.getElementById('appScreen').style.display='none';
+  document.getElementById('authScreen').style.display='flex';
+  document.getElementById('groupsContainer').innerHTML='';
+  document.getElementById('lUser').value='';
+  document.getElementById('lPass').value='';
+  showMsg('');
+}
+</script>
+</body>
+</html>
