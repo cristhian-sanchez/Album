@@ -412,12 +412,11 @@ function doRegister() {
   if (pass.length < 6) return showMsg('La contraseña debe tener al menos 6 caracteres.');
   if (pass !== pass2) return showMsg('Las contraseñas no coinciden.');
 
-  // Mantenemos tu UI intacta simulando un e-mail estructurado con su nombre de usuario
-  const fakeEmail = `${user}@panini2026.local`;
+  // CORRECCIÓN: Usar un dominio de correo estándar (.com) aceptado por Firebase
+  const fakeEmail = `${user}@panini2026.com`;
 
   createUserWithEmailAndPassword(auth, fakeEmail, pass)
     .then((userCredential) => {
-      // Guardamos la relación UID -> Nombre de usuario para mostrarlo en el header
       return set(ref(db, 'users_metadata/' + userCredential.user.uid), { username: user });
     })
     .then(() => {
@@ -440,7 +439,8 @@ function doLogin() {
   const pass = document.getElementById('lPass').value;
   if (!user || !pass) return showMsg('Por favor completa todos los campos.');
 
-  const fakeEmail = `${user}@panini2026.local`;
+  // CORRECCIÓN: Usar un dominio de correo estándar (.com) aceptado por Firebase
+  const fakeEmail = `${user}@panini2026.com`;
 
   signInWithEmailAndPassword(auth, fakeEmail, pass)
     .catch((error) => {
