@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>Contacto — Panini Mundial 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#080d1a; --surface:#101624; --surface2:#151e2e; --surface3:#1a2438;
+      --border:#1c2840; --border2:#253550;
+      --text:#eef4ff; --text2:#6b8db5; --text3:#2e4a6a;
+      --green:#22c55e; --blue:#3b82f6; --purple:#a855f7;
+      --r:10px; --r-lg:16px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7}
+    a{color:var(--blue);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .site-header{background:rgba(8,13,26,.95);backdrop-filter:blur(20px);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:58px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+    .logo{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--text);display:flex;align-items:center;gap:8px;letter-spacing:.05em;text-decoration:none}
+    .logo-badge{background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;font-family:'Outfit',sans-serif;font-size:9px;padding:2px 8px;border-radius:99px;font-weight:800;letter-spacing:.08em}
+    .back-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border2);background:transparent;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Outfit',sans-serif;font-weight:700;text-decoration:none;transition:all .2s}
+    .back-btn:hover{background:var(--surface2);color:var(--text);text-decoration:none}
+
+    .page-wrap{max-width:760px;margin:0 auto;padding:48px 20px 80px}
+    .page-hero{margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+    .page-tag{display:inline-block;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);color:#c084fc;font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+    .page-title{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:.04em;color:var(--text);line-height:1;margin-bottom:10px}
+    .page-sub{font-size:14px;color:var(--text2);margin-top:10px;max-width:540px}
+
+    /* Tarjetas de contacto */
+    .contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:40px}
+    .contact-card{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-lg);padding:22px 20px;transition:all .2s;text-align:center}
+    .contact-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+    .cc-icon{font-size:32px;margin-bottom:10px}
+    .cc-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:5px}
+    .cc-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:12px}
+    .cc-link{display:inline-block;padding:7px 16px;border-radius:8px;border:1px solid var(--border2);background:var(--surface3);font-size:12px;color:var(--text2);font-weight:700;transition:all .2s}
+    .cc-link:hover{background:var(--blue);border-color:var(--blue);color:#fff;text-decoration:none}
+
+    /* Formulario */
+    .form-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;margin-bottom:32px}
+    .form-section h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--text);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+    .form-section h2::before{content:'';display:block;width:3px;height:22px;background:var(--purple);border-radius:2px;flex-shrink:0}
+    .form-field{margin-bottom:16px}
+    .form-field label{display:block;font-size:11px;color:var(--text2);margin-bottom:7px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .form-field input, .form-field textarea, .form-field select{width:100%;padding:11px 14px;background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);outline:none;transition:all .2s}
+    .form-field input:focus, .form-field textarea:focus, .form-field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.15);background:var(--surface2)}
+    .form-field input::placeholder, .form-field textarea::placeholder{color:var(--text3)}
+    .form-field textarea{min-height:120px;resize:vertical}
+    .form-field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b8db5' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:40px}
+    .form-field select option{background:var(--surface2)}
+    .submit-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--purple),#7c3aed);border:none;border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;color:#fff;cursor:pointer;transition:all .25s;letter-spacing:.03em}
+    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(168,85,247,.4)}
+    .submit-btn:active{transform:translateY(0)}
+
+    .success-msg{display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:var(--r);padding:14px 18px;font-size:14px;color:#86efac;margin-top:14px;text-align:center;font-weight:600}
+
+    /* FAQ */
+    .faq-section h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .faq-section h2::before{content:'';display:block;width:3px;height:22px;background:var(--green);border-radius:2px;flex-shrink:0}
+    .faq-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+    .faq-q{padding:14px 18px;font-size:14px;font-weight:700;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+    .faq-q:hover{color:var(--green)}
+    .faq-arrow{font-size:12px;color:var(--text3);transition:transform .2s}
+    .faq-a{padding:0 18px;max-height:0;overflow:hidden;transition:all .3s ease;font-size:13px;color:var(--text2);line-height:1.7}
+    .faq-item.open .faq-a{max-height:200px;padding:0 18px 14px}
+    .faq-item.open .faq-arrow{transform:rotate(180deg)}
+
+    .footer{background:var(--surface);border-top:1px solid var(--border);padding:28px 20px;text-align:center;font-size:12px;color:var(--text3)}
+    .footer-links{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:10px}
+    .footer-links a{color:var(--text2);text-decoration:none;transition:color .2s}
+    .footer-links a:hover{color:var(--text)}
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="logo" href="index.html">⚽ <span>PANINI 2026</span> <span class="logo-badge">MUNDIAL</span></a>
+  <a class="back-btn" href="index.html">← Volver al álbum</a>
+</header>
+
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="page-tag">Soporte</div>
+    <h1 class="page-title">Contacto</h1>
+    <p class="page-sub">¿Tienes alguna pregunta, sugerencia o problema con tu álbum? Escríbenos, estamos aquí para ayudarte.</p>
+  </div>
+
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="cc-icon">📧</div>
+      <div class="cc-title">Correo electrónico</div>
+      <div class="cc-desc">Para consultas generales y soporte técnico</div>
+      <!-- REEMPLAZA con tu correo real -->
+      <a href="mailto:soporte@misfiguritas2026.online" class="cc-link">Enviar email</a>
+    </div>
+    <div class="contact-card">
+      <div class="cc-icon">💬</div>
+      <div class="cc-title">Redes sociales</div>
+      <div class="cc-desc">Síguenos para novedades y actualizaciones</div>
+      <!-- REEMPLAZA con tu red social real -->
+      <a href="#" class="cc-link">Seguir en Twitter</a>
+    </div>
+    <div class="contact-card">
+      <div class="cc-icon">🐛</div>
+      <div class="cc-title">Reportar error</div>
+      <div class="cc-desc">¿Encontraste un bug? Cuéntanos los detalles</div>
+      <a href="#contact-form" class="cc-link">Reportar</a>
+    </div>
+  </div>
+
+  <div class="form-section" id="contact-form">
+    <h2>Envíanos un mensaje</h2>
+    <div class="form-field">
+      <label>Tu nombre de usuario</label>
+      <input type="text" id="fName" placeholder="mi_usuario" />
+    </div>
+    <div class="form-field">
+      <label>Correo electrónico (para responderte)</label>
+      <input type="email" id="fEmail" placeholder="tucorreo@ejemplo.com" />
+    </div>
+    <div class="form-field">
+      <label>Motivo del contacto</label>
+      <select id="fTopic">
+        <option value="">Selecciona un motivo...</option>
+        <option value="soporte">🔧 Problema técnico</option>
+        <option value="cuenta">👤 Problema con mi cuenta</option>
+        <option value="privacidad">🔒 Solicitud de privacidad / eliminar datos</option>
+        <option value="sugerencia">💡 Sugerencia o mejora</option>
+        <option value="otro">💬 Otro</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Mensaje</label>
+      <textarea id="fMsg" placeholder="Escribe tu mensaje aquí..."></textarea>
+    </div>
+    <button class="submit-btn" onclick="sendForm()">Enviar mensaje →</button>
+    <div class="success-msg" id="successMsg">✓ ¡Mensaje enviado! Te responderemos lo antes posible a tu correo.</div>
+  </div>
+
+  <div class="faq-section">
+    <h2>Preguntas frecuentes</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        ¿Puedo perder mis figuritas marcadas?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">Tu progreso se guarda automáticamente en la nube cada vez que marcas una figurita. Mientras recuerdes tu usuario y contraseña, tus datos estarán seguros.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        ¿Olvidé mi contraseña, qué hago?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">Actualmente el sistema no tiene recuperación automática de contraseña. Contáctanos a través del formulario de arriba con tu nombre de usuario y te ayudaremos a recuperar el acceso.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        ¿El sitio tiene afiliación oficial con Panini o FIFA?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">No. Este es un proyecto independiente creado por fans para facilitar el seguimiento de la colección. No tenemos relación oficial con Panini S.p.A. ni con FIFA.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        ¿Cómo puedo pedir que eliminen mi cuenta?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">Usa el formulario de contacto de arriba, selecciona "Solicitud de privacidad / eliminar datos" y te confirmaremos la eliminación de tu cuenta y todos tus datos en un plazo de 48 horas.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        ¿Puedo usar el sitio sin crear una cuenta?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">No, necesitas una cuenta para guardar tu progreso en la nube. Sin cuenta, tus figuritas marcadas no se guardarán si cierras el navegador.</div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-links">
+    <a href="index.html">⚽ Álbum</a>
+    <a href="privacidad.html">Política de Privacidad</a>
+    <a href="terminos.html">Términos y Condiciones</a>
+    <a href="contacto.html">Contacto</a>
+  </div>
+  <p>© 2025 Panini Mundial 2026 · Todos los derechos reservados</p>
+</footer>
+
+<script>
+function toggleFaq(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+function sendForm() {
+  const name = document.getElementById('fName').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  const topic = document.getElementById('fTopic').value;
+  const msg = document.getElementById('fMsg').value.trim();
+
+  if (!name || !email || !topic || !msg) {
+    alert('Por favor completa todos los campos antes de enviar.');
+    return;
+  }
+  if (!email.includes('@')) {
+    alert('Por favor ingresa un correo electrónico válido.');
+    return;
+  }
+
+  // OPCIÓN A: Redirigir a mailto (sin servidor)
+  const subject = encodeURIComponent('Contacto Panini 2026 - ' + topic);
+  const body = encodeURIComponent(
+    'Usuario: ' + name + '\n' +
+    'Motivo: ' + topic + '\n\n' +
+    msg
+  );
+  // REEMPLAZA con tu correo real
+  window.location.href = 'mailto:soporte@misfiguritas2026.online?subject=' + subject + '&body=' + body;
+
+  document.getElementById('successMsg').style.display = 'block';
+  document.getElementById('fName').value = '';
+  document.getElementById('fEmail').value = '';
+  document.getElementById('fTopic').value = '';
+  document.getElementById('fMsg').value = '';
+}
+</script>
+
+</body>
+</html>
