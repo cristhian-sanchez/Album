@@ -42,7 +42,7 @@ const CC = [
   {n:13,name:'Raúl Jiménez',team:'México',flag:'🇲🇽'},{n:14,name:'Lautaro Martínez',team:'Argentina',flag:'🇦🇷'},
 ];
 
-const SITE_URL = 'https://panini2026.web.app'; // ← cambia a tu URL real
+const SITE_URL = 'https://misfiguritas2026.online/'; // ← cambia a tu URL real
 const FPT = 20, TOTAL = 994;
 let currentUser = null;
 let album = { sobres:0, stickers:{} };
