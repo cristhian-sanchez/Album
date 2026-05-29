@@ -3,131 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0f1e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Álbum Panini — Mundial 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- ══════════════ PANTALLA DE AUTENTICACIÓN ══════════════ -->
+<!-- ══════════════ PANTALLA AUTH ══════════════ -->
 <div id="authScreen">
+  <div class="auth-bg-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
   <div class="auth-box">
     <div class="auth-logo">
-      <span class="ball">⚽</span>
-      <h1>PANINI MUNDIAL 2026</h1>
+      <div class="auth-ball-wrap"><span class="ball">⚽</span></div>
+      <h1>PANINI<br><span class="auth-year">MUNDIAL 2026</span></h1>
       <p>Registra tu progreso y compara con amigos</p>
     </div>
-
     <div class="auth-tabs">
       <button class="auth-tab active" id="tabLoginBtn" onclick="switchTab('login')">Iniciar sesión</button>
       <button class="auth-tab" id="tabRegBtn" onclick="switchTab('register')">Crear cuenta</button>
     </div>
-
     <div class="auth-msg" id="authMsg"></div>
-
     <!-- LOGIN -->
     <div id="loginForm">
       <div class="auth-field">
         <label>Usuario</label>
-        <input id="lUser" type="text" placeholder="tu_usuario" autocomplete="username" />
+        <div class="input-wrap"><span class="input-icon">👤</span><input id="lUser" type="text" placeholder="tu_usuario" autocomplete="username"/></div>
       </div>
       <div class="auth-field">
         <label>Contraseña</label>
-        <input id="lPass" type="password" placeholder="••••••••" autocomplete="current-password" />
+        <div class="input-wrap"><span class="input-icon">🔒</span><input id="lPass" type="password" placeholder="••••••••" autocomplete="current-password"/><button class="toggle-pw" onclick="togglePw('lPass',this)" type="button">👁</button></div>
       </div>
-      <button class="auth-btn" onclick="doLogin()">Entrar →</button>
+      <button class="auth-btn" id="loginBtn" onclick="doLogin()"><span>Entrar</span> →</button>
     </div>
-
     <!-- REGISTRO -->
     <div id="registerForm" style="display:none">
       <div class="auth-field">
-        <label>Usuario <span style="color:#3a5a7a;font-size:10px;">(2–20 chars: letras/números/_)</span></label>
-        <input id="rUser" type="text" placeholder="mi_usuario" autocomplete="username" />
+        <label>Usuario <small>(3–20 chars)</small></label>
+        <div class="input-wrap"><span class="input-icon">👤</span><input id="rUser" type="text" placeholder="mi_usuario" autocomplete="username"/></div>
       </div>
       <div class="auth-field">
-        <label>Contraseña <span style="color:#3a5a7a;font-size:10px;">(mín. 6 chars)</span></label>
-        <input id="rPass" type="password" placeholder="••••••••" autocomplete="new-password" />
+        <label>Contraseña <small>(mín. 6 chars)</small></label>
+        <div class="input-wrap"><span class="input-icon">🔒</span><input id="rPass" type="password" placeholder="••••••••" autocomplete="new-password"/><button class="toggle-pw" onclick="togglePw('rPass',this)" type="button">👁</button></div>
       </div>
       <div class="auth-field">
         <label>Confirmar contraseña</label>
-        <input id="rPass2" type="password" placeholder="••••••••" autocomplete="new-password" />
+        <div class="input-wrap"><span class="input-icon">🔒</span><input id="rPass2" type="password" placeholder="••••••••" autocomplete="new-password"/></div>
       </div>
-      <button class="auth-btn" onclick="doRegister()">Crear cuenta →</button>
+      <button class="auth-btn" id="registerBtn" onclick="doRegister()"><span>Crear cuenta</span> →</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ PANTALLA PRINCIPAL DE LA APP ══════════════ -->
+<!-- ══════════════ APP ══════════════ -->
 <div id="appScreen">
 
   <!-- HEADER -->
   <header class="site-header">
-    <div class="logo">⚽ PANINI 2026 <span class="logo-badge">MUNDIAL</span></div>
+    <div class="logo">⚽ <span>PANINI 2026</span> <span class="logo-badge">MUNDIAL</span></div>
     <div class="header-right">
       <div class="header-user">👤 <b id="hUser"></b></div>
       <div class="header-pct">Completo: <b id="hPct">0%</b></div>
+      <button class="share-btn" onclick="shareProgress()" title="Compartir progreso">📤</button>
       <button class="logout-btn" onclick="doLogout()">Salir</button>
     </div>
   </header>
 
-  <!-- HERO / STATS -->
+  <!-- HERO -->
   <div class="hero">
     <div class="hero-inner">
-      <h1 class="hero-title">Mi Álbum — Copa Mundial FIFA 2026</h1>
-      <p class="hero-sub">1 clic = tengo &nbsp;·&nbsp; 2 clics = repetida &nbsp;·&nbsp; 3 clics = quitar</p>
+      <div class="hero-top">
+        <div>
+          <h1 class="hero-title">Mi Álbum <span class="hero-title-accent">FIFA 2026</span></h1>
+          <p class="hero-sub">1 clic = tengo &nbsp;·&nbsp; 2 clics = repetida &nbsp;·&nbsp; 3 clics = quitar</p>
+        </div>
+        <div class="hero-trophy" id="heroTrophy">🏆</div>
+      </div>
 
       <div class="big-progress">
-        <div class="big-pct" id="bigPct">0%</div>
+        <div class="big-pct-wrap">
+          <div class="big-pct" id="bigPct">0%</div>
+          <div class="big-pct-sub">completado</div>
+        </div>
         <div class="big-progress-right">
-          <div class="lbl">Progreso total (994 figuritas)</div>
+          <div class="bar-label-row">
+            <span class="lbl">Progreso total</span>
+            <span class="bar-text" id="mainBarText">0 / 994</span>
+          </div>
           <div class="bar-track"><div class="bar-fill" id="mainBar" style="width:0%"></div></div>
-          <div class="bar-text" id="mainBarText">0 de 994</div>
+          <div class="milestone-row" id="milestoneRow">
+            <span class="milestone" data-pct="25">25%</span>
+            <span class="milestone" data-pct="50">50%</span>
+            <span class="milestone" data-pct="75">75%</span>
+            <span class="milestone" data-pct="100">🏆</span>
+          </div>
         </div>
       </div>
 
       <div class="stats-row">
         <div class="stat-box green">
-          <div class="lbl">✓ Tengo</div>
+          <div class="stat-icon">✓</div>
           <div class="val" id="sHave">0</div>
-          <div class="sub">figuritas</div>
+          <div class="lbl">Tengo</div>
         </div>
-        <div class="stat-box">
-          <div class="lbl">✗ Faltan</div>
+        <div class="stat-box red">
+          <div class="stat-icon">✗</div>
           <div class="val" id="sMiss">994</div>
-          <div class="sub">figuritas</div>
+          <div class="lbl">Faltan</div>
         </div>
         <div class="stat-box amber">
-          <div class="lbl">↺ Repetidas</div>
+          <div class="stat-icon">↺</div>
           <div class="val" id="sRep">0</div>
-          <div class="sub">para cambiar</div>
+          <div class="lbl">Repetidas</div>
         </div>
-        <div class="stat-box blue">
-          <div class="lbl">📦 Sobres</div>
+        <div class="stat-box blue" onclick="changeSobres(0)" style="cursor:default">
+          <div class="stat-icon">📦</div>
           <div class="val" id="sSobres">0</div>
-          <div class="sub" id="sSobresInfo">≈ 0 figuritas</div>
+          <div class="lbl" id="sSobresInfo">≈ 0 fig.</div>
         </div>
-        <div class="stat-box">
-          <div class="lbl">🏆 Grupos</div>
+        <div class="stat-box purple">
+          <div class="stat-icon">🏆</div>
           <div class="val" id="sGroups">0/12</div>
-          <div class="sub">completos</div>
+          <div class="lbl">Grupos</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- BARRA DE CONTROLES -->
+  <!-- CONTROLS BAR -->
   <div class="controls-bar">
     <div class="controls-inner">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
         <input type="text" id="searchInput" placeholder="Buscar equipo..." oninput="applyFilter()" />
+        <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none">✕</button>
       </div>
-      <button class="filter-btn active" onclick="setFilter('all', this)">Todos</button>
-      <button class="filter-btn" onclick="setFilter('incomplete', this)">Incompletos</button>
-      <button class="filter-btn" onclick="setFilter('complete', this)">Completos</button>
+      <div class="filter-group">
+        <button class="filter-btn active" onclick="setFilter('all',this)">Todos</button>
+        <button class="filter-btn" onclick="setFilter('incomplete',this)">Incompletos</button>
+        <button class="filter-btn" onclick="setFilter('complete',this)">Completos</button>
+      </div>
       <div class="sobre-wrap">
-        <label>📦 Sobres:</label>
+        <label>📦</label>
         <button class="sobre-btn" onclick="changeSobres(-1)">−</button>
         <span class="sobre-val" id="sobresDisp">0</span>
         <button class="sobre-btn" onclick="changeSobres(1)">+</button>
@@ -135,54 +159,71 @@
     </div>
   </div>
 
-  <!-- CONTENIDO PRINCIPAL -->
+  <!-- MAIN -->
   <div class="main">
     <div class="page-tabs">
-      <button class="page-tab active" onclick="showTab('album', this)">📘 Álbum</button>
-      <button class="page-tab" onclick="showTab('duplicates', this)">🔄 Repetidas</button>
+      <button class="page-tab active" onclick="showTab('album',this)">📘 Álbum</button>
+      <button class="page-tab" onclick="showTab('duplicates',this)">🔄 Repetidas</button>
+      <button class="page-tab" onclick="showTab('stats',this)">📊 Estadísticas</button>
     </div>
 
-    <!-- TAB: ÁLBUM -->
+    <!-- TAB ÁLBUM -->
     <div id="tab-album">
       <div class="legend">
         <div class="leg-item"><div class="leg-box leg-miss"></div>Falta</div>
         <div class="leg-item"><div class="leg-box leg-have"></div>Tengo</div>
         <div class="leg-item"><div class="leg-box leg-rep"></div>Repetida</div>
-        <span style="color:var(--text3);font-size:11px;margin-left:6px;">3 clics = desmarcar</span>
+        <span class="leg-hint">3 clics = quitar</span>
       </div>
       <div id="groupsContainer"></div>
     </div>
 
-    <!-- TAB: REPETIDAS -->
+    <!-- TAB REPETIDAS -->
     <div id="tab-duplicates" style="display:none">
       <div class="dup-panel">
         <div class="dup-panel-header">
-          🔄 Repetidas <span style="font-size:13px;font-weight:400;color:var(--text2)" id="dupCount">(0)</span>
+          🔄 Mis repetidas <span id="dupCount" class="dup-count-badge">0</span>
+          <button class="dup-copy-btn" onclick="copyDups()" title="Copiar lista">📋 Copiar lista</button>
         </div>
-        <table class="dup-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Equipo / Jugador</th>
-              <th>Sección</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
+        <div id="dupEmpty" class="empty-dup">No tienes repetidas aún 🎉</div>
+        <table class="dup-table" id="dupTable" style="display:none">
+          <thead><tr><th>ID</th><th>Equipo / Jugador</th><th>Sección</th><th>Estado</th></tr></thead>
           <tbody id="dupBody"></tbody>
         </table>
-        <div class="empty-dup" id="dupEmpty">No tienes repetidas aún 🎉</div>
       </div>
+    </div>
+
+    <!-- TAB ESTADÍSTICAS -->
+    <div id="tab-stats" style="display:none">
+      <div class="stats-page" id="statsPage"></div>
     </div>
   </div>
 
 </div><!-- fin #appScreen -->
 
-<!-- TOAST DE GUARDADO -->
+<!-- MODAL CELEBRACIÓN -->
+<div class="celebration-overlay" id="celebrationOverlay" onclick="closeCelebration()">
+  <div class="celebration-box">
+    <div class="celebration-emoji" id="celebEmoji">🎉</div>
+    <div class="celebration-title" id="celebTitle">¡Grupo completado!</div>
+    <div class="celebration-sub" id="celebSub"></div>
+    <button class="celebration-btn" onclick="closeCelebration()">¡Genial!</button>
+  </div>
+</div>
+
+<!-- TOAST -->
 <div class="save-toast" id="toast">✓ Guardado</div>
 
-<!-- JAVASCRIPT (módulo ES6) -->
-<script type="module" src="app.js"></script>
+<!-- SHARE MODAL -->
+<div class="share-overlay" id="shareOverlay" onclick="closeShare()">
+  <div class="share-box" onclick="event.stopPropagation()">
+    <div class="share-title">📤 Compartir progreso</div>
+    <div class="share-text" id="shareText"></div>
+    <button class="auth-btn" onclick="copyShare()">📋 Copiar texto</button>
+    <button class="share-close" onclick="closeShare()">Cerrar</button>
+  </div>
+</div>
 
+<script type="module" src="app.js"></script>
 </body>
 </html>
-
