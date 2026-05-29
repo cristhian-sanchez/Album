@@ -42,6 +42,7 @@ const CC = [
   {n:13,name:'Raúl Jiménez',team:'México',flag:'🇲🇽'},{n:14,name:'Lautaro Martínez',team:'Argentina',flag:'🇦🇷'},
 ];
 
+const SITE_URL = 'https://panini2026.web.app'; // ← cambia a tu URL real
 const FPT = 20, TOTAL = 994;
 let currentUser = null;
 let album = { sobres:0, stickers:{} };
@@ -272,20 +273,16 @@ function updateStats() {
   const { have, rep, miss } = calcAll();
   const pct = Math.round(have/TOTAL*100);
 
-  // Header
   const hPct = $('hPct'); if (hPct) hPct.textContent = pct + '%';
   const bigPct = $('bigPct'); if (bigPct) bigPct.textContent = pct + '%';
 
-  // Barra principal
   const bar = $('mainBar'); if (bar) bar.style.width = pct + '%';
   const barTxt = $('mainBarText'); if (barTxt) barTxt.textContent = have + ' / ' + TOTAL;
 
-  // Milestones
   document.querySelectorAll('.milestone').forEach(m => {
     m.classList.toggle('reached', pct >= parseInt(m.dataset.pct));
   });
 
-  // Cajas de stats
   if ($('sHave')) $('sHave').textContent = have;
   if ($('sMiss')) $('sMiss').textContent = miss;
   if ($('sRep')) $('sRep').textContent = rep;
@@ -298,7 +295,6 @@ function updateStats() {
   });
   if ($('sGroups')) $('sGroups').textContent = done + '/12';
 
-  // Color del porcentaje según progreso
   if (bigPct) {
     bigPct.style.color = pct === 100 ? '#fbbf24' : pct >= 75 ? '#4ade80' : pct >= 50 ? '#22c55e' : 'var(--green)';
   }
@@ -369,7 +365,6 @@ function buildAlbum() {
       updateTeamCard(card);
     });
     updateGroupHeader(sec);
-    // Marcar grupos ya completos sin celebrar
     let h = 0, t = g.teams.length * FPT;
     g.teams.forEach(tm => { for (let i = 1; i <= FPT; i++) { if (st(fid(tm.code, i)) >= 1) h++; } });
     if (h === t) { sec.classList.add('completed'); completedGroups.add(g.id); }
@@ -512,11 +507,47 @@ function buildDups() {
 window.copyDups = function() {
   const reps = [];
   GRUPOS.forEach(g => g.teams.forEach(t => {
-    for (let i = 1; i <= FPT; i++) { if (st(fid(t.code, i)) === 2) reps.push(t.flag + ' ' + t.name + ' #' + i); }
+    for (let i = 1; i <= FPT; i++) {
+      if (st(fid(t.code, i)) === 2) reps.push(t.flag + ' ' + t.name + ' #' + i + ' (Grupo ' + g.id + ')');
+    }
   }));
+  for (let i = 0; i <= 19; i++) {
+    if (st('SPEC_' + i) === 2) reps.push('⭐ Especial FW' + i);
+  }
+  CC.forEach(p => {
+    if (st('CC_' + p.n) === 2) reps.push(p.flag + ' ' + p.name + ' CC' + p.n);
+  });
+
   if (!reps.length) return showToast('No hay repetidas', 'var(--amber)');
-  navigator.clipboard.writeText('Mis repetidas Panini 2026:\n' + reps.join('\n'))
-    .then(() => showToast('📋 ¡Copiado!', 'var(--blue)'));
+
+  const { have } = calcAll();
+  const pct = Math.round(have / TOTAL * 100);
+  const msg = `⚽ Mis repetidas del Álbum Mundial 2026 (${pct}% completado):\n\n${reps.join('\n')}\n\n¿Me las cambias? Lleva el tuyo en: ${SITE_URL}`;
+
+  navigator.clipboard.writeText(msg)
+    .then(() => showToast('📋 Lista copiada con enlace', 'var(--blue)'));
+};
+
+window.shareDupsWhatsApp = function() {
+  const reps = [];
+  GRUPOS.forEach(g => g.teams.forEach(t => {
+    for (let i = 1; i <= FPT; i++) {
+      if (st(fid(t.code, i)) === 2) reps.push(t.flag + ' ' + t.name + ' #' + i);
+    }
+  }));
+  for (let i = 0; i <= 19; i++) {
+    if (st('SPEC_' + i) === 2) reps.push('⭐ Especial FW' + i);
+  }
+  CC.forEach(p => {
+    if (st('CC_' + p.n) === 2) reps.push(p.flag + ' ' + p.name + ' CC' + p.n);
+  });
+
+  if (!reps.length) return showToast('No hay repetidas aún', 'var(--amber)');
+
+  const { have } = calcAll();
+  const pct = Math.round(have / TOTAL * 100);
+  const msg = `⚽ Mis *repetidas* del Álbum Mundial 2026 (tengo el ${pct}%)\n\n${reps.join('\n')}\n\n¿Me las cambias? 👉 ${SITE_URL}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 };
 
 /* ══════════ STATS PAGE ══════════ */
@@ -526,7 +557,6 @@ function buildStats() {
   const { have, rep, miss } = calcAll();
   const pct = Math.round(have/TOTAL*100);
 
-  // Top 5 equipos
   const teamData = [];
   GRUPOS.forEach(g => g.teams.forEach(t => {
     let h = 0;
@@ -536,14 +566,12 @@ function buildStats() {
   teamData.sort((a,b) => b.pct - a.pct);
   const top5 = teamData.slice(0, 5);
 
-  // Barras por grupo
   const groupBars = GRUPOS.map(g => {
     let h = 0, t = g.teams.length * FPT;
     g.teams.forEach(tm => { for (let i = 1; i <= FPT; i++) { if (st(fid(tm.code, i)) >= 1) h++; } });
     return { id: g.id, have: h, total: t, pct: Math.round(h/t*100) };
   });
 
-  // Pie chart SVG
   const pieData = [
     { label: 'Tengo', val: have, color: '#22c55e' },
     { label: 'Faltan', val: miss, color: '#1a2438' },
@@ -626,27 +654,36 @@ window.closeCelebration = function() {
 /* ══════════ SHARE ══════════ */
 window.shareProgress = function() {
   const { have, rep, miss } = calcAll();
-  const pct = Math.round(have/TOTAL*100);
+  const pct = Math.round(have / TOTAL * 100);
   let done = 0;
   GRUPOS.forEach(g => {
     let h = 0;
     g.teams.forEach(t => { for (let i = 1; i <= FPT; i++) { if (st(fid(t.code, i)) >= 1) h++; } });
     if (h === g.teams.length * FPT) done++;
   });
-  const bar = '█'.repeat(Math.round(pct/10)) + '░'.repeat(10-Math.round(pct/10));
-  const text = `⚽ ÁLBUM PANINI MUNDIAL 2026\n` +
-    `👤 Usuario: ${currentUser}\n\n` +
-    `${bar} ${pct}%\n\n` +
-    `✅ Tengo:     ${have}\n` +
-    `❌ Faltan:    ${miss}\n` +
-    `🔄 Repetidas: ${rep}\n` +
-    `🏆 Grupos completos: ${done}/12`;
+
+  const bar = '█'.repeat(Math.round(pct / 10)) + '░'.repeat(10 - Math.round(pct / 10));
+  const text = `⚽ ¡Ya tengo el ${pct}% del álbum del Mundial 2026!\n\n${bar} ${pct}%\n\n✅ Tengo: ${have}  ❌ Faltan: ${miss}\n🔄 Repetidas: ${rep}  🏆 Grupos: ${done}/12\n\n¿Puedes superarme? 👇\n${SITE_URL}`;
+
   $('shareText').textContent = text;
   $('shareOverlay').classList.add('show');
+
+  window._shareText = text;
+  window._sharePct = pct;
 };
 
 window.closeShare = function() { $('shareOverlay').classList.remove('show'); };
+
 window.copyShare = function() {
-  navigator.clipboard.writeText($('shareText').textContent)
+  navigator.clipboard.writeText(window._shareText)
     .then(() => { showToast('📋 ¡Copiado!', 'var(--blue)'); window.closeShare(); });
+};
+
+window.shareWhatsApp = function() {
+  window.open('https://wa.me/?text=' + encodeURIComponent(window._shareText), '_blank');
+};
+
+window.shareTwitter = function() {
+  const tweet = `⚽ ¡Ya tengo el ${window._sharePct}% del álbum del Mundial 2026! ¿Puedes superarme? ${SITE_URL} #Panini2026 #Mundial2026`;
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
 };
