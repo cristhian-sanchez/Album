@@ -32,7 +32,6 @@
     .page-title{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:.04em;color:var(--text);line-height:1;margin-bottom:10px}
     .page-sub{font-size:14px;color:var(--text2);margin-top:10px;max-width:540px}
 
-    /* Tarjetas de contacto */
     .contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:40px}
     .contact-card{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-lg);padding:22px 20px;transition:all .2s;text-align:center}
     .contact-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
@@ -41,26 +40,24 @@
     .cc-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:12px}
     .cc-link{display:inline-block;padding:7px 16px;border-radius:8px;border:1px solid var(--border2);background:var(--surface3);font-size:12px;color:var(--text2);font-weight:700;transition:all .2s}
     .cc-link:hover{background:var(--blue);border-color:var(--blue);color:#fff;text-decoration:none}
+    .cc-link.instagram:hover{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);border-color:#833ab4}
 
-    /* Formulario */
     .form-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;margin-bottom:32px}
     .form-section h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--text);margin-bottom:20px;display:flex;align-items:center;gap:10px}
     .form-section h2::before{content:'';display:block;width:3px;height:22px;background:var(--purple);border-radius:2px;flex-shrink:0}
     .form-field{margin-bottom:16px}
     .form-field label{display:block;font-size:11px;color:var(--text2);margin-bottom:7px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-    .form-field input, .form-field textarea, .form-field select{width:100%;padding:11px 14px;background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);outline:none;transition:all .2s}
-    .form-field input:focus, .form-field textarea:focus, .form-field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.15);background:var(--surface2)}
-    .form-field input::placeholder, .form-field textarea::placeholder{color:var(--text3)}
+    .form-field input,.form-field textarea,.form-field select{width:100%;padding:11px 14px;background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);outline:none;transition:all .2s}
+    .form-field input:focus,.form-field textarea:focus,.form-field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.15);background:var(--surface2)}
+    .form-field input::placeholder,.form-field textarea::placeholder{color:var(--text3)}
     .form-field textarea{min-height:120px;resize:vertical}
     .form-field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b8db5' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:40px}
     .form-field select option{background:var(--surface2)}
     .submit-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--purple),#7c3aed);border:none;border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;color:#fff;cursor:pointer;transition:all .25s;letter-spacing:.03em}
     .submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(168,85,247,.4)}
     .submit-btn:active{transform:translateY(0)}
-
     .success-msg{display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:var(--r);padding:14px 18px;font-size:14px;color:#86efac;margin-top:14px;text-align:center;font-weight:600}
 
-    /* FAQ */
     .faq-section h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:10px}
     .faq-section h2::before{content:'';display:block;width:3px;height:22px;background:var(--green);border-radius:2px;flex-shrink:0}
     .faq-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
@@ -92,19 +89,23 @@
   </div>
 
   <div class="contact-grid">
+    <!-- TARJETA 1: CORREO -->
     <div class="contact-card">
       <div class="cc-icon">📧</div>
       <div class="cc-title">Correo electrónico</div>
       <div class="cc-desc">Para consultas generales y soporte técnico</div>
-      <!-- REEMPLAZA con tu correo real -->
-      <a href="mailto:sanchezcristhian164@gmal.com" class="cc-link">Enviar email</a>
+      <a href="mailto:sanchezcristhian164@gmail.com" class="cc-link">Enviar email</a>
     </div>
+
+    <!-- TARJETA 2: INSTAGRAM -->
     <div class="contact-card">
-      <div class="cc-icon">💬</div>
-      <div class="cc-title">Redes sociales</div>
-      <div class="cc-desc">Síguenos para novedades y actualizaciones</div>
-      
+      <div class="cc-icon">📸</div>
+      <div class="cc-title">Instagram</div>
+      <div class="cc-desc">Síguenos para novedades y actualizaciones del álbum</div>
+      <a href="https://www.instagram.com/cristhian._sanchezz/" target="_blank" rel="noopener" class="cc-link instagram">@cristhian._sanchezz</a>
     </div>
+
+    <!-- TARJETA 3: REPORTAR ERROR -->
     <div class="contact-card">
       <div class="cc-icon">🐛</div>
       <div class="cc-title">Reportar error</div>
@@ -218,14 +219,12 @@ function sendForm() {
     return;
   }
 
-  // OPCIÓN A: Redirigir a mailto (sin servidor)
   const subject = encodeURIComponent('Contacto Panini 2026 - ' + topic);
   const body = encodeURIComponent(
     'Usuario: ' + name + '\n' +
     'Motivo: ' + topic + '\n\n' +
     msg
   );
-  // REEMPLAZA con tu correo real
   window.location.href = 'mailto:sanchezcristhian164@gmail.com?subject=' + subject + '&body=' + body;
 
   document.getElementById('successMsg').style.display = 'block';
